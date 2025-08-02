@@ -6,6 +6,7 @@ import Loading from './Loading'
 
 export const RoomsDashboard = () => {
     const { rooms, loading, error, fetchRooms } = useRooms()
+    
     useEffect(() => {
         fetchRooms()
     }, [])

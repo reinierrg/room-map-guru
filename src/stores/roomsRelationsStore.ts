@@ -6,6 +6,7 @@ interface RoomsRelationsState {
     loading: boolean
     error: string | null
 
+    setRelations: (newRelations: { [key: number]: number[] }) => void;
     addRelation: (supervisorId: number, subordinateId: number) => void
     removeRelation: (supervisorId: number, subordinateId: number) => void
     deleteRelation: (personId: number) => void
@@ -37,6 +38,10 @@ export const useRoomsRelationsStore = create<RoomsRelationsState>()(
                             (id) => id !== subordinateId
                         ),
                     },
+                })),
+            setRelations: (newRelations) =>
+                set(() => ({
+                    relations: newRelations,
                 })),
 
            /* deleteRelation: (personId) =>
