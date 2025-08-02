@@ -1,0 +1,121 @@
+{
+    "hotels": [
+        {
+            "id": "1",
+            "name": "Grand Plaza Hotel",
+            "location": "Ciudad de México",
+            "rating": 4.5,
+            "thumbnail": "https://via.placeholder.com/150"
+        },
+        {
+            "id": "2",
+            "name": "Beach Resort Cancún",
+            "location": "Cancún",
+            "rating": 4.8,
+            "thumbnail": "https://via.placeholder.com/150"
+        },
+        {
+            "id": "3",
+            "name": "Mountain Lodge",
+            "location": "Monterrey",
+            "rating": 4.2,
+            "thumbnail": "https://via.placeholder.com/150"
+        }
+    ],
+    "rooms": [
+        {
+            "idroom": "101",
+            "hotelId": "1",
+            "name": "Habitación Estándar",
+            "type": "Interno",
+            "uri": "https://via.placeholder.com/300x200?text=Interno",
+            "mapExpedia": "201,301",
+            "maphb": "401",
+            "maphs": "501",
+            "map": "",
+            "price": 1200
+        },
+        {
+            "idroom": "102",
+            "hotelId": "1",
+            "name": "Suite Presidencial",
+            "type": "Interno",
+            "uri": "https://via.placeholder.com/300x200?text=Interno+Suite",
+            "mapExpedia": "202,302",
+            "maphb": "402",
+            "maphs": "502",
+            "map": "",
+            "price": 3500
+        },
+        {
+            "idroom": "201",
+            "hotelId": "1",
+            "name": "Standard Room",
+            "type": "Expedia",
+            "uri": "https://via.placeholder.com/300x200?text=Expedia",
+            "mapExpedia": "",
+            "maphb": "",
+            "maphs": "",
+            "map": "101",
+            "price": 1250
+        },
+        {
+            "idroom": "301",
+            "hotelId": "1",
+            "name": "Deluxe Room",
+            "type": "Expedia",
+            "uri": "https://via.placeholder.com/300x200?text=Expedia+Deluxe",
+            "mapExpedia": "",
+            "maphb": "",
+            "maphs": "",
+            "map": "101",
+            "price": 1500
+        },
+        {
+            "idroom": "401",
+            "hotelId": "1",
+            "name": "Standard HB",
+            "type": "HB",
+            "uri": "https://via.placeholder.com/300x200?text=HotelBeds",
+            "mapExpedia": "",
+            "maphb": "",
+            "maphs": "",
+            "map": "101",
+            "price": 1100
+        },
+        {
+            "idroom": "501",
+            "hotelId": "1",
+            "name": "Basic HS",
+            "type": "HS",
+            "uri": "https://via.placeholder.com/300x200?text=Hotels.com",
+            "mapExpedia": "",
+            "maphb": "",
+            "maphs": "",
+            "map": "101",
+            "price": 1150
+        },
+        {
+            "idroom": "601",
+            "hotelId": "2",
+            "name": "Ocean View Room",
+            "type": "Interno",
+            "uri": "https://via.placeholder.com/300x200?text=Interno+Ocean",
+            "mapExpedia": "701,801",
+            "maphb": "901",
+            "maphs": "1001",
+            "map": "",
+            "price": 2500
+        }
+    ],
+    "mappings": [
+        {
+            "id": "1",
+            "hotelId": "1",
+            "sourceId": "101",
+            "targetId": "201",
+            "provider": "Expedia",
+            "similarity": 0.85
+        }
+    ]
+}
