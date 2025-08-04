@@ -1,8 +1,7 @@
-import type { Room, RoomType } from './room.types';
-import type { HotelSearchResult } from './room.types';
+import type { IHotelSearchResult, IRoom, RoomType } from "./room.types";
 
 // Define the expected shape of the API room object
-interface ApiRoom {
+interface IApiRoom {
     idroom: string;
     name: string;
     type: string;
@@ -15,7 +14,7 @@ interface ApiRoom {
 }
 
 // Mapea los datos de la API a nuestro modelo interno
-export const mapApiRoomToRoom = (apiRoom: ApiRoom): Room => ({
+export const mapApiRoomToRoom = (apiRoom: IApiRoom): Partial<IRoom> => ({
     id: apiRoom.idroom,
     name: apiRoom.name,
     type: mapRoomType(apiRoom.type),
@@ -24,7 +23,8 @@ export const mapApiRoomToRoom = (apiRoom: ApiRoom): Room => ({
     mapHb: apiRoom.maphb,
     mapHs: apiRoom.maphs,
     map: apiRoom.map,
-    price: apiRoom.price
+    price: apiRoom.price,
+    
 });
 
 // Convierte el tipo de habitación de string a nuestro tipo enum
@@ -39,7 +39,7 @@ const mapRoomType = (type: string): RoomType => {
 };
 
 // Define the expected shape of the API hotel object
-interface ApiHotel {
+interface IApiHotel {
     id: string;
     name: string;
     location: string;
@@ -48,7 +48,7 @@ interface ApiHotel {
 }
 
 // Mapea la respuesta de búsqueda de hoteles
-export const mapApiHotelToSearchResult = (apiHotel: ApiHotel): HotelSearchResult => ({
+export const mapApiHotelToSearchResult = (apiHotel: IApiHotel): IHotelSearchResult => ({
     id: apiHotel.id,
     name: apiHotel.name,
     location: apiHotel.location,

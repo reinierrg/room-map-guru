@@ -7,8 +7,8 @@ import {
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
-import { useRelations } from '../hooks/useRoomsRelations'
-import { useRooms } from '../hooks/useRooms'
+import { useRelations } from '../hooks/useRelations'
+import { useRooms,  } from '../hooks/useRooms'
 import type { IRoom } from '../types/types'
 import { SubordinateSelector } from './SubordinateSelector'
 import { SubordinateItem } from './SubordinateItem'
@@ -22,7 +22,7 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
     const [subordinateSearchTerm, setSubordinateSearchTerm] = useState('')
 
     const roomTypes = useMemo(() => [
-        { id: 'internal', name: 'Internal', color: 'bg-blue-500', icon: '👔' },
+        { id: 'Interna', name: 'Internal', color: 'bg-blue-500', icon: '👔' },
         { id: 'expedia', name: 'Expedia', color: 'bg-green-500', icon: '💻' },
         { id: 'hotelbeds', name: 'Hotelbeds', color: 'bg-purple-500', icon: '🎨' },
         { id: 'hotelunico', name: 'HotelUnico', color: 'bg-orange-500', icon: '📊' },

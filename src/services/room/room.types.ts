@@ -1,8 +1,10 @@
 // Tipos para habitaciones
 export type RoomType = 'Interno' | 'Expedia' | 'HB' | 'HS';
 
-export interface Room {
-    id: string;
+export interface IRoom {
+    id: string
+    description?: string
+    position: string
     name: string;
     type: RoomType;
     uri?: string; 
@@ -13,19 +15,26 @@ export interface Room {
     price?: number;
 }
 
-export interface RoomMapping {
+export interface IRoomMapping {
     sourceId: string;
     targetId: string;
     provider: RoomType;
     similarity?: number;
 }
 
-export interface HotelSearchResult {
+export interface IHotelSearchResult {
     id: string;
     name: string;
     location: string;
     rating?: number;
     thumbnail?: string;
+}
+
+export interface IHotel {
+    id: string,
+    name:  string,
+    color: string,
+    icon: string,
 }
 
 export interface AutoMapRequest {

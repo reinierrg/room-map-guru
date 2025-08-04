@@ -1,75 +1,55 @@
-# React + TypeScript + Vite
+# Hotel Booking Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Una aplicación web desarrollada con **React + TypeScript + Vite**, que permite gestionar habitaciones de diferentes hoteles simulando integraciones con proveedores como *Expedia*, *Hotelbeds*, *HotelUnico* e internos.
 
-Currently, two official plugins are available:
+## 🚀 Características principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Gestión de habitaciones por proveedor (Interno, Expedia, Hotelbeds, HotelUnico)
+- Visualización y filtrado de hoteles
+- Simulación de API REST usando `json-server`
+- Arquitectura escalable basada en servicios
 
-## Expanding the ESLint configuration
+## 📁 Estructura del proyecto
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## ⚙️ Instalación
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Clona el repositorio:
+```bash
+git clone https://github.com/tu-usuario/tu-repo.git
+cd tu-repo
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. Instalar dependencias
+```bash
+npm install
 ```
 
-Ejecutar el json-server
+3. Inicia el servidor mock
+```bash
+npm run mock
+```
 
+4. Inicia la aplicación
+```bash
+npm run dev
 ```
-json-server --watch mock/db.json --routes mock/routes.json --port 4000
+
+5. Scripts disponibles
+```bash
+npm run dev       # Ejecuta la app en modo desarrollo
+npm run build     # Compila la app para producción
+npm run preview   # Visualiza el build
+npm run mock      # Inicia json-server con datos en src/mock/db.json
 ```
+
+ 
+## Tecnologías usadas
+- React + TypeScript
+- Vite
+- Zustand
+- Tailwind CSS
+- json-server
+
+## Datos simulados
+- Se utilizan datos simulados desde src/mock/db.json y rutas personalizadas desde src/mock/routes.json. Esto permite simular peticiones reales de backend sin conexión externa.

@@ -1,8 +1,8 @@
 import apiClient from '../api/axiosConfig';
 import type {
-    Room,
-    RoomMapping,
-    HotelSearchResult,
+    IRoom,
+    IRoomMapping,
+    IHotelSearchResult,
     AutoMapRequest
 } from './room.types';
 import {
@@ -10,13 +10,14 @@ import {
     mapApiHotelToSearchResult
 } from './room.mappers';
 import type { ApiResponse, PaginatedResponse } from '../../types/api.types';
+import { API_ENDPOINTS } from '../api/endpoints';
 
 class RoomService {
     // Buscar hoteles por nombre
-    async searchHotels(query: string): Promise<HotelSearchResult[]> {
+    async searchHotels(query: string): Promise<IHotelSearchResult[]> {
         try {
             const response = await apiClient.get<ApiResponse<any[]>>(
-                '/search/hotels',
+                API_ENDPOINTS.SEARCH_HOTELS,
                 { params: { query } }
             );
 
@@ -27,23 +28,22 @@ class RoomService {
     }
 
     // Obtener habitaciones de un hotel
-    async getHotelRooms(hotelId: string): Promise<Room[]> {
+    async getHotelRooms(hotelId: string): Promise<Partial<IRoom>[]> {
         try {
-            const response = await apiClient.get<ApiResponse<any[]>>(
-                `/hotels/${hotelId}/rooms`
+            const response = await apiClient.get<any>(
+                API_ENDPOINTS.HOTEL_ROOMS(hotelId)
             );
-
-            return response.data.data.map(mapApiRoomToRoom);
+            return response.data.map(mapApiRoomToRoom);
         } catch (error) {
             throw new Error('Error al obtener habitaciones');
         }
     }
 
     // Guardar mapeos de habitaciones
-    async saveRoomMappings(mappings: RoomMapping[]): Promise<void> {
+    async saveRoomMappings(mappings: IRoomMapping[]): Promise<void> {
         try {
             await apiClient.post<ApiResponse<void>>(
-                '/rooms/mappings',
+                API_ENDPOINTS.SAVE_MAPPINGS,
                 { mappings }
             );
         } catch (error) {
@@ -52,10 +52,10 @@ class RoomService {
     }
 
     // Auto-mapear habitaciones por similitud
-    async autoMapRooms(request: AutoMapRequest): Promise<RoomMapping[]> {
+    async autoMapRooms(request: AutoMapRequest): Promise<IRoomMapping[]> {
         try {
             const response = await apiClient.post<ApiResponse<any[]>>(
-                '/rooms/auto-map',
+                API_ENDPOINTS.AUTO_MAP,
                 request
             );
 
@@ -69,7 +69,7 @@ class RoomService {
     async clearMappings(hotelId: string): Promise<void> {
         try {
             await apiClient.post<ApiResponse<void>>(
-                `/hotels/${hotelId}/clear-mappings`
+                API_ENDPOINTS.CLEAR_MAPPINGS(hotelId)
             );
         } catch (error) {
             throw new Error('Error al limpiar mapeos');
