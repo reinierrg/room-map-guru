@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 
-import { useRelations } from '../hooks/useRoomsRelations'
+import { useRelations } from '../hooks/useRelations'
 import { useRooms } from '../hooks/useRooms'
 import type { IRoom } from '../types/types'
 
@@ -18,8 +18,7 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
         rooms,
         loading: roomLoading,
         error: roomError,
-        setRooms,
-        fetchRooms,
+        setRooms
     } = useRooms()
 
     const {
@@ -34,8 +33,6 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
     const [expandedPeople, setExpandedPeople] = useState({})
     const [showSubordinateSelector, setShowSubordinateSelector] = useState({})
     const [subordinateSearchTerm, setSubordinateSearchTerm] = useState('')
-
-    console.log(expandedPeople)
 
     const [roomTypes] = useState([
         { id: 'internal', name: 'Internal', color: 'bg-blue-500', icon: '👔' },

@@ -1,0 +1,7 @@
+{
+  "/search/hotels": "/hotels",
+  "/hotels/:id/rooms": "/rooms?hotelId=:id",
+  "/rooms/mappings": "/mappings",
+  "/rooms/auto-map": "/mappings",
+  "/hotels/:id/clear-mappings": "/mappings?hotelId=:id"
+}

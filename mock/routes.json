@@ -1,5 +1,0 @@
-{
-    "/hotels/search": "/hotels",
-    "/hotels/:hotelId/rooms": "/rooms?hotelId=:hotelId",
-    "/mapping/save": "/mappings"
-}

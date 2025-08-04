@@ -1,18 +1,14 @@
 import { House } from 'lucide-react'
-import { useEffect } from 'react'
-import { useRooms } from '../hooks/useRooms'
 import { RoomCard } from './RoomCard'
 import Loading from './Loading'
+import { useLoadRooms } from '../hooks/useLoadRooms'
 
 export const RoomsDashboard = () => {
-    const { rooms, loading, error, fetchRooms } = useRooms()
     
-    useEffect(() => {
-        fetchRooms()
-    }, [])
+    const {rooms, loading, error} = useLoadRooms()
 
     const getManagersOnly = () => {
-        return rooms.filter((room) => room.type === 'internal')
+        return rooms.filter((room) => room.type === 'Interno')
     }
 
     if (loading) return <Loading />
@@ -25,7 +21,7 @@ export const RoomsDashboard = () => {
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                     Error
                 </h3>
-                <p className="text-gray-500">Error al cargar del Dashboard</p>
+                <p className="text-gray-500">{error}</p>
             </div>
         )
 
@@ -34,7 +30,7 @@ export const RoomsDashboard = () => {
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {getManagersOnly().map((room) => (
-                        <RoomCard key={room.id} room={room} />
+                        <RoomCard key={room?.id} room={room} />
                     ))}
                 </div>
 

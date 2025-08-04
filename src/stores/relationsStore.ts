@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
-interface RoomsRelationsState {
+interface RelationsState {
     relations: { [key: number]: number[] }
     loading: boolean
     error: string | null
@@ -12,7 +12,7 @@ interface RoomsRelationsState {
     deleteRelation: (personId: number) => void
 }
 
-export const useRoomsRelationsStore = create<RoomsRelationsState>()(
+export const useRelationsStore = create<RelationsState>()(
     devtools(
         (set) => ({
             relations: [],
@@ -39,24 +39,12 @@ export const useRoomsRelationsStore = create<RoomsRelationsState>()(
                         ),
                     },
                 })),
+                
             setRelations: (newRelations) =>
                 set(() => ({
                     relations: newRelations,
                 })),
-
-           /* deleteRelation: (personId) =>
-                set((state) => {
-                    const newRelations = { ...state.relations }
-                    delete newRelations[personId]
-                    Object.keys(newRelations).forEach((supervisorId) => {
-                        newRelations[supervisorId] = newRelations[
-                            supervisorId
-                        ]?.filter((id) => id !== personId)
-                    })
-                    return { relations: newRelations }
-                }),
-                */
         }),
-        { name: 'rooms-relations-store' }
+        { name: 'relations-store' }
     )
 )

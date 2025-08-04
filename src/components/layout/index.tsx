@@ -37,7 +37,6 @@ export default function Layout() {
                             <ul className="space-y-1">
                                 {navItems.map(({ label, path, icon }) => {
                                     const isActive = location.pathname === path
-                                    console.log(location.pathname, path, isActive)
                                     return (
                                         <li key={path}>
                                             <Link
