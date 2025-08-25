@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react'
-import type { IRoom } from '../types/types'
+import type { IRoom } from '../services/room/room.types'
 
 export const SubordinateSelector = ({
     availableSubordinates,

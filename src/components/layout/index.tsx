@@ -7,7 +7,7 @@ export default function Layout() {
 
     const navItems = [
         { label: 'Home', path: '/', icon: <Home size={18} /> },
-        { label: 'Reglas', path: '/reglas', icon: <FileText size={18} /> },
+        
     ]
 
     return (
@@ -28,7 +28,7 @@ export default function Layout() {
             {/* Cuerpo principal */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar izquierda */}
-                <aside className="bg-slate-50 w-56 shrink-0 h-screen border-r border-slate-200 flex flex-col">
+                {/*<aside className="bg-slate-50 w-56 shrink-0 h-screen border-r border-slate-200 flex flex-col">
                     <div className="p-4">
                         <h2 className="text-lg font-semibold text-slate-800 mb-6">
                             Menú
@@ -57,7 +57,7 @@ export default function Layout() {
                             </ul>
                         </nav>
                     </div>
-                </aside>
+                </aside> */}
 
                 {/* Contenido */}
                 <main className="flex-1 bg-white overflow-y-auto">

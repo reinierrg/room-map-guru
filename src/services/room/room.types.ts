@@ -2,15 +2,15 @@
 export type RoomType = 'Interno' | 'Expedia' | 'HB' | 'HS';
 
 export interface IRoom {
-    id: string
+    id: number
     description?: string
     position: string
     name: string;
     type: RoomType;
     uri?: string; 
-    mapExpedia?: string;
-    mapHb?: string;
-    mapHs?: string;
+    mapExpedia?: number[];
+    mapHb?: number[];
+    mapHs?: number[];
     map?: string;
     price?: number;
 }
@@ -23,7 +23,7 @@ export interface IRoomMapping {
 }
 
 export interface IHotelSearchResult {
-    id: string;
+    id: number;
     name: string;
     location: string;
     rating?: number;
@@ -31,7 +31,7 @@ export interface IHotelSearchResult {
 }
 
 export interface IHotel {
-    id: string,
+    id: number,
     name:  string,
     color: string,
     icon: string,

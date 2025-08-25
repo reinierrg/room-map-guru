@@ -5,8 +5,9 @@ interface RelationsState {
     relations: { [key: number]: number[] }
     loading: boolean
     error: string | null
+    modified: boolean;
 
-    setRelations: (newRelations: { [key: number]: number[] }) => void;
+    setRelations: (newRelations: { [key: number]: number[] }, modified: boolean) => void;
     addRelation: (supervisorId: number, subordinateId: number) => void
     removeRelation: (supervisorId: number, subordinateId: number) => void
     deleteRelation: (personId: number) => void
@@ -18,6 +19,7 @@ export const useRelationsStore = create<RelationsState>()(
             relations: [],
             loading: false,
             error: null,
+            modified: true,
 
             addRelation: (supervisorId, subordinateId) =>
                 set((state) => ({
@@ -28,6 +30,7 @@ export const useRelationsStore = create<RelationsState>()(
                             subordinateId,
                         ],
                     },
+                    modified: true
                 })),
 
             removeRelation: (supervisorId, subordinateId) =>
@@ -38,11 +41,13 @@ export const useRelationsStore = create<RelationsState>()(
                             (id) => id !== subordinateId
                         ),
                     },
+                    modified: true
                 })),
                 
-            setRelations: (newRelations) =>
+            setRelations: (newRelations, modified = true) =>
                 set(() => ({
                     relations: newRelations,
+                    modified,
                 })),
         }),
         { name: 'relations-store' }

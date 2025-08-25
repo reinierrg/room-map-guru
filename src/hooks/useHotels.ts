@@ -1,8 +1,8 @@
 import { useHotelsStore } from '../stores/hotelsStore';
 
 export const useHotels = () => {
-  const { hotels, loading, error, setHotels, loadHotels } = useHotelsStore(
+  const { hotels, hotelsTemp, loading, error, setHotels, loadHotels, searchHotels } = useHotelsStore(
     (state) => state
   );
-  return { hotels, loading, error, setHotels, loadHotels };
+  return { hotels, hotelsTemp, loading, error, setHotels, loadHotels, searchHotels };
 };

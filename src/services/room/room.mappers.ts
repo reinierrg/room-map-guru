@@ -1,3 +1,4 @@
+import RoomMapper from "../../models/RoomMapper";
 import type { IHotelSearchResult, IRoom, RoomType } from "./room.types";
 
 // Define the expected shape of the API room object
@@ -14,7 +15,8 @@ interface IApiRoom {
 }
 
 // Mapea los datos de la API a nuestro modelo interno
-export const mapApiRoomToRoom = (apiRoom: IApiRoom): Partial<IRoom> => ({
+export const mapApiRoomToRoom = (apiRoom: IApiRoom): Partial<IRoom> => {
+    const mapRoom = {
     id: apiRoom.idroom,
     name: apiRoom.name,
     type: mapRoomType(apiRoom.type),
@@ -23,9 +25,10 @@ export const mapApiRoomToRoom = (apiRoom: IApiRoom): Partial<IRoom> => ({
     mapHb: apiRoom.maphb,
     mapHs: apiRoom.maphs,
     map: apiRoom.map,
-    price: apiRoom.price,
-    
-});
+    price: apiRoom.price
+    }
+    return RoomMapper.processRoom(mapRoom);
+};
 
 // Convierte el tipo de habitación de string a nuestro tipo enum
 const mapRoomType = (type: string): RoomType => {
@@ -40,7 +43,7 @@ const mapRoomType = (type: string): RoomType => {
 
 // Define the expected shape of the API hotel object
 interface IApiHotel {
-    id: string;
+    id: number;
     name: string;
     location: string;
     rating: number;
@@ -54,4 +57,18 @@ export const mapApiHotelToSearchResult = (apiHotel: IApiHotel): IHotelSearchResu
     location: apiHotel.location,
     rating: apiHotel.rating,
     thumbnail: apiHotel.thumbnail
+});
+
+
+// Define the expected shape of the API hotel object
+interface IApiHotellocal {
+    hotelId: number;
+    nombre: string;
+    
+}
+
+// Mapea la respuesta de búsqueda de hoteles
+export const mapApiHotellocalToSearchResult = (apiHotel: IApiHotellocal): Partial<IHotelSearchResult> => ({
+    id: apiHotel.hotelId,
+    name: apiHotel.nombre
 });

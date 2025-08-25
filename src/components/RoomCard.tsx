@@ -1,17 +1,17 @@
 import {
     ChevronDown,
     ChevronRight,
-    UserPlus,
-    Users,
+    HousePlus,
+    House,
     X,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { useRelations } from '../hooks/useRelations'
-import { useRooms,  } from '../hooks/useRooms'
-import type { IRoom } from '../types/types'
+import { useRooms } from '../hooks/useRooms'
 import { SubordinateSelector } from './SubordinateSelector'
 import { SubordinateItem } from './SubordinateItem'
+import type { IRoom } from '../services/room/room.types'
 
 export const RoomCard = ({ room }: { room: IRoom }) => {
     const { rooms, setRooms } = useRooms()
@@ -22,14 +22,14 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
     const [subordinateSearchTerm, setSubordinateSearchTerm] = useState('')
 
     const roomTypes = useMemo(() => [
-        { id: 'Interna', name: 'Internal', color: 'bg-blue-500', icon: '👔' },
-        { id: 'expedia', name: 'Expedia', color: 'bg-green-500', icon: '💻' },
-        { id: 'hotelbeds', name: 'Hotelbeds', color: 'bg-purple-500', icon: '🎨' },
-        { id: 'hotelunico', name: 'HotelUnico', color: 'bg-orange-500', icon: '📊' },
+        { id: 'Interno', name: 'Interno', color: 'bg-blue-500', icon: '👔' },
+        { id: 'Expedia', name: 'Expedia', color: 'bg-green-500', icon: '💻' },
+        { id: 'HB', name: 'Hotelbeds', color: 'bg-purple-500', icon: '🎨' },
+        { id: 'HS', name: 'HotelUnico', color: 'bg-orange-500', icon: '📊' },
     ], [])
 
     const roomsMap = useMemo(() => new Map(rooms.map(r => [r.id, r])), [rooms])
-    const getRoomById = (id: number) => roomsMap.get(id)
+    const getRoomById = (id: any) => roomsMap.get(id)
     const getTypeById = (id: string) => roomTypes.find((type) => type.id === id)
 
     const toggleExpanded = (id: number) => {
@@ -46,15 +46,15 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
         return subs.some((subId) => isRoomDescendant(subId, potentialSupervisorId))
     }
 
-    const getAvailableSubordinates = (supervisorId: number): IRoom[] => {
+    const getAvailableSubordinates = (supervisorId: number): Partial<IRoom>[] => {
         const supervisor = getRoomById(supervisorId)
         const currentSubs = relations[supervisorId] || []
-        return rooms.filter((r) =>
+        return rooms.filter((r: any) =>
             r.id !== supervisorId &&
             !currentSubs.includes(r.id) &&
             !isRoomDescendant(r.id, supervisorId) &&
             r.name.toLowerCase().includes(subordinateSearchTerm.toLowerCase()) &&
-            (supervisor?.type !== 'internal' || r.type !== 'internal')
+            (supervisor?.type !== 'Interno' || r.type !== 'Interno')
         )
     }
 
@@ -82,7 +82,7 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
         setRelations(newRelations)
     }
 
-    const isManager = room.type === 'internal'
+    const isManager = room.type === 'Interno'
     const subordinates = relations[room.id] || []
     const isExpanded = expandedPeople[room.id]
     const showSelector = showSubordinateSelector[room.id]
@@ -114,12 +114,12 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
                     </div>
                     <div className="flex items-center gap-2">
                         {subordinates.length > 0 && (
-                            <span className="text-sm text-gray-500 flex items-center gap-1">
-                                <Users size={14} /> {subordinates.length}
+                            <span className="text-sm text-gray-500 flex items-center gap-1 ms-0.5">
+                                <House size={18} /> {subordinates.length}
                             </span>
                         )}
                         <button onClick={() => toggleSubordinateSelector(room.id)} className="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-blue-500">
-                            <UserPlus size={18} />
+                            <HousePlus size={18} />
                         </button>
                         {!isManager && (
                             <button onClick={() => deleteRoom(room.id)} className="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-red-500">
@@ -152,15 +152,10 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
                                 level={0}
                                 expandedPeople={expandedPeople}
                                 toggleExpanded={toggleExpanded}
-                                showSelector={showSubordinateSelector[subordinate.id]}
-                                toggleSubordinateSelector={toggleSubordinateSelector}
                                 removeRelation={removeRelation}
                                 getTypeById={getTypeById}
                                 relations={relations}
-                                availableSubordinates={getAvailableSubordinates(subordinate.id)}
-                                addSubordinate={addSubordinate}
-                                subordinateSearchTerm={subordinateSearchTerm}
-                                setSubordinateSearchTerm={setSubordinateSearchTerm}
+                              
                             />
                         ) : null
                     })}
