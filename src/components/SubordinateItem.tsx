@@ -36,8 +36,8 @@ export const SubordinateItem = ({
                         {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                     </button>
                 )}
-                <div className={`w-4 h-4 rounded-full ${roomType?.color || 'bg-gray-400'} flex items-center justify-center text-xs`}>
-                    {roomType?.icon || '👤'}
+                <div className={`w-8 h-8 rounded-full ${roomType?.color || 'bg-gray-400'} flex items-center justify-center text-xs`}>
+                    <img src={roomType?.icon} width={16} height={16}/>
                 </div>
                 <div className="flex-1">
                     <div className="font-medium text-gray-900">{room.name}</div>

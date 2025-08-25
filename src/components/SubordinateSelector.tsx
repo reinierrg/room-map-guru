@@ -38,8 +38,8 @@ export const SubordinateSelector = ({
                             onClick={() => onSelect(subordinate.id)}
                             className="w-full px-3 py-2 text-left hover:bg-white rounded text-sm flex items-center gap-2"
                         >
-                            <div className={`w-4 h-4 rounded-full ${subType?.color || 'bg-gray-400'} flex items-center justify-center text-xs`}>
-                                {subType?.icon || '👤'}
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs`}>
+                                <img src={subType?.icon} width={16} height={16}/>
                             </div>
                             <div>
                                 <div className="font-medium">{subordinate.name}</div>

@@ -41,3 +41,12 @@ export interface AutoMapRequest {
     hotelId: string;
     similarityThreshold: number;
 }
+
+export type IdAgent = 'Interno' | 'Expedia' | 'HB' | 'HS'
+
+export interface IAgent {
+    id: IdAgent,
+    name: string,
+    color: string,
+    icon: string
+}

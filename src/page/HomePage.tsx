@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react'
 import { RoomsDashboard } from '../components/RoomsDashboard'
 import type { IHotel, IRoom } from '../services/room/room.types'
+import { 
+    Bed,
+    Binoculars,
+    ShieldQuestionMark,
+} from 'lucide-react'
 
 import { useHotels } from '../hooks/useHotels'
 import { useRooms } from '../hooks/useRooms'
 import { useRelations } from '../hooks/useRelations'
 import RoomMapper from '../models/RoomMapper'
+import { useAgents } from '../hooks/useAgents'
+
 
 const RoomsByType = ({
     rooms,
@@ -17,6 +24,8 @@ const RoomsByType = ({
     relations: object
 }) => {
     const filteredRooms = rooms.filter((room) => room.type === type)
+    const { getAgentById } = useAgents()
+    const agent = getAgentById(type)
 
     // Función para verificar si un room está relacionado
     const isRoomRelated = (roomId: number): boolean => {
@@ -33,9 +42,6 @@ const RoomsByType = ({
 
     return (
         <div>
-            <h3 className="text-lg font-semibold mb-4">
-                {type} Rooms ({filteredRooms.length})
-            </h3>
             {/* Estadísticas rápidas */}
             <div className="mb-4 p-3 bg-gray-100 rounded-lg">
                 <p className="text-sm text-gray-600">
@@ -60,29 +66,38 @@ const RoomsByType = ({
                                     related
                                         ? 'bg-blue-50 border-blue-200 transform hover:scale-105'
                                         : 'bg-white border-gray-200'
-                                }`}
+                                } `}
                             >
                                 <div className="p-4 border-gray-100">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
+                                            <div
+                                                className={`w-16 h-16 rounded-full flex items-center justify-center text-white`}
+                                            >
+                                                <img
+                                                    src={agent?.icon}
+                                                    width={16}
+                                                    height={16}
+                                                />
+                                            </div>
                                             <h4 className="font-medium text-gray-800">
                                                 {room.name}
                                             </h4>
                                             <p className="text-sm text-gray-600">
                                                 ID: {room.id}
-                                            </p>
+                                            </p>                                    
                                             <div className="mt-2 text-xs">
-                                                {room.mapExpedia && (
+                                                {room.occupancy && (
                                                     <p>
-                                                        Expedia:{' '}
-                                                        {room.mapExpedia}
+                                                        <ShieldQuestionMark size={18}/>: {' '}
+                                                        {room.occupancy}
                                                     </p>
                                                 )}
-                                                {room.mapHb && (
-                                                    <p>HB: {room.mapHb}</p>
+                                                {room.bed && (
+                                                    <p><Bed size={18}/> : {room.bed}</p>
                                                 )}
-                                                {room.mapHs && (
-                                                    <p>HS: {room.mapHs}</p>
+                                                {room.view && (
+                                                    <p><Binoculars size={18}/>: {room.view}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -109,6 +124,8 @@ export default function HomePage() {
         searchHotels,
     } = useHotels()
     const { rooms, loading: roomsLoading, loadRooms, saveRooms } = useRooms()
+    const { getAgentById } = useAgents()
+
     const { modified, relations } = useRelations()
     const [searchTerm, setSearchTerm] = useState<string>('')
     const [selectedItem, setSelectedItem] = useState<IHotel | null>(null)
@@ -117,6 +134,7 @@ export default function HomePage() {
         type: 'success' | 'error'
         message: string
     } | null>(null)
+
     const [activeTab, setActiveTab] = useState<
         'interno' | 'expedia' | 'hb' | 'hs'
     >('interno')
@@ -183,7 +201,8 @@ export default function HomePage() {
         <div className="min-h-screen bg-gray-50 p-4 pb-20">
             {' '}
             {/* Añadido padding-bottom para evitar que el botón tape contenido */}
-            <header className="max-w-2xl mx-auto mb-8">
+            <header className="relative max-w-2xl mx-auto mb-8">
+                
                 <div className="flex flex-col items-center">
                     <div className="relative w-full max-w-md">
                         <div className="flex items-center">
@@ -295,6 +314,20 @@ export default function HomePage() {
                             )}
                     </div>
                 </div>
+                {rooms.length > 0 && activeTab === 'interno' && (
+                <button
+                    onClick={handleSave}
+                    disabled={!modified}
+                    className={`fixed top-18 right-6 px-6 py-3 rounded-lg shadow-lg font-medium transition-colors duration-200 z-50
+          ${
+              modified
+                  ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                  : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+          }`}
+                >
+                    Salvar
+                </button>
+            )}
             </header>
             <main className="max-w-6xl mx-auto">
                 {selectedItem ? (
@@ -310,7 +343,14 @@ export default function HomePage() {
                                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}
                                 >
-                                    Interno ({internalRooms.length})
+                                    <div className="flex gap-1.5">
+                                        <img
+                                            src={`${getAgentById('Interno').icon}`}
+                                            width="16"
+                                            height="16"
+                                        />{' '}
+                                        Interno ({internalRooms.length})
+                                    </div>
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('expedia')}
@@ -320,7 +360,14 @@ export default function HomePage() {
                                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}
                                 >
-                                    Expedia ({expediaRooms.length})
+                                    <div className="flex gap-1.5">
+                                        <img
+                                            src={`${getAgentById('Expedia').icon}`}
+                                            width="16"
+                                            height="16"
+                                        />{' '}
+                                        Expedia ({expediaRooms.length})
+                                    </div>
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('hb')}
@@ -330,7 +377,14 @@ export default function HomePage() {
                                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}
                                 >
-                                    HB ({hbRooms.length})
+                                    <div className="flex gap-1.5">
+                                        <img
+                                            src={`${getAgentById('HB').icon}`}
+                                            width="16"
+                                            height="16"
+                                        />{' '}
+                                        HB ({hbRooms.length})
+                                    </div>
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('hs')}
@@ -340,7 +394,14 @@ export default function HomePage() {
                                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}
                                 >
-                                    HS ({hsRooms.length})
+                                    <div className="flex gap-1.5">
+                                        <img
+                                            src={`${getAgentById('HS').icon}`}
+                                            width="16"
+                                            height="16"
+                                        />{' '}
+                                        HS ({hsRooms.length})
+                                    </div>
                                 </button>
                             </nav>
                         </div>
@@ -349,9 +410,15 @@ export default function HomePage() {
                         <div className="bg-white rounded-lg shadow p-6">
                             {activeTab === 'interno' && (
                                 <div>
-                                    <h2 className="text-xl font-bold mb-4">
-                                        Rooms Internos
-                                    </h2>
+                                    <div className="flex gap-2">
+                                        <h2 className="text-xl font-bold mb-4">
+                                            Rooms Internos
+                                        </h2>
+                                        <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mt-1 " style={{height: '1.8rem'}}>
+                                            Habitacion Base
+                                        </span>
+                                    </div>
+
                                     <RoomsDashboard />
                                 </div>
                             )}
@@ -421,20 +488,7 @@ export default function HomePage() {
                 </div>
             )}
             {/* Botón Flotante "Salvar" */}
-            {rooms.length > 0 && (
-                <button
-                    onClick={handleSave}
-                    disabled={!modified}
-                    className={`fixed bottom-6 right-6 px-6 py-3 rounded-lg shadow-lg font-medium transition-colors duration-200 z-50
-          ${
-              modified
-                  ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
-                  : 'bg-gray-400 text-gray-200 cursor-not-allowed'
-          }`}
-                >
-                    Salvar
-                </button>
-            )}
+            
         </div>
     )
 }
