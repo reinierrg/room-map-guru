@@ -349,7 +349,7 @@ export default function HomePage() {
                                             width="16"
                                             height="16"
                                         />{' '}
-                                        Interno ({internalRooms.length})
+                                        PriceTravel ({internalRooms.length})
                                     </div>
                                 </button>
                                 <button
@@ -383,7 +383,7 @@ export default function HomePage() {
                                             width="16"
                                             height="16"
                                         />{' '}
-                                        HB ({hbRooms.length})
+                                        HotelBeds ({hbRooms.length})
                                     </div>
                                 </button>
                                 <button
@@ -400,7 +400,7 @@ export default function HomePage() {
                                             width="16"
                                             height="16"
                                         />{' '}
-                                        HS ({hsRooms.length})
+                                        Unico ({hsRooms.length})
                                     </div>
                                 </button>
                             </nav>
@@ -412,7 +412,7 @@ export default function HomePage() {
                                 <div>
                                     <div className="flex gap-2">
                                         <h2 className="text-xl font-bold mb-4">
-                                            Rooms Internos
+                                            Rooms PriceTravel
                                         </h2>
                                         <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mt-1 " style={{height: '1.8rem'}}>
                                             Habitacion Base
@@ -439,7 +439,7 @@ export default function HomePage() {
                             {activeTab === 'hb' && (
                                 <div>
                                     <h2 className="text-xl font-bold mb-4">
-                                        Rooms HB
+                                        Rooms HotelBeds
                                     </h2>
                                     <RoomsByType
                                         rooms={rooms}
@@ -452,7 +452,7 @@ export default function HomePage() {
                             {activeTab === 'hs' && (
                                 <div>
                                     <h2 className="text-xl font-bold mb-4">
-                                        Rooms HS
+                                        Rooms Unico
                                     </h2>
                                     <RoomsByType
                                         rooms={rooms}
