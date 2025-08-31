@@ -21,6 +21,6 @@ export const initialValuesAgent = [
         id: 'HS',
         name: 'HotelUnico',
         color: 'orange-500',
-        icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAY1BMVEUZKjYYKTUVJDETIC4UIzAYKDQfND89ZWtBam9MfH9EcHUrRk9PgYQbLjkiOEN4xMGH29aF2NQ2WF9cl5hus7JzvLqB0s4KEiUQHCtDbXMlPkckPEU5XWNIdntXj5FioKEuTFSTUgjIAAAAtElEQVR4AezNNRbDQAwAUaGZme37XzKscKq03m7eX0nw10MiZhbSS6nwucwc1/N9P3DDs2roR34UBYA3jpM0y11bVJRpFYVoqVg3TWGbqPWcTh9H4YxkKf1g9gN3HJ+RqryZ5I6Bgw8ELvO8Zyua4RnFzfOlu4WGHj0ZKFR5HettTRDqMwIVzWmUEEC7yQYfi4s6W0MSGudAEd41DtZqXaJ5I7Pnu8yEoHIcK640ygjRRDkAAN+LDKThu+ePAAAAAElFTkSuQmCC',
+        icon: '/unico.jpg',
     },
 ]

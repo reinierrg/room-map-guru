@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import type { IHotel, IHotelSearchResult } from '../services/room/room.types'
+import type { IHotel } from '../services/room/room.types'
 import { roomService } from '../services/room/room.service'
 
 interface HotelsState {
@@ -15,7 +15,7 @@ interface HotelsState {
 
 export const useHotelsStore = create<HotelsState>()(
     devtools(
-        (set, get) => ({
+        (set) => ({
             hotelsTemp: [],
             hotels: [],
             loading: false,
@@ -23,31 +23,13 @@ export const useHotelsStore = create<HotelsState>()(
 
             setHotels: (newHotels: IHotel[]) =>
                 set(() => ({ hotels: newHotels })),
-            loadHotels: async () => {
-                set({ loading: true, error: null })
-                try {
-                    // Implementar logica para cargar lista de hoteles
-                    const data: any[] = await roomService.loadHotels()
-                    set({ hotels: data, hotelsTemp: data, loading: false })
-                } catch (err: any) {
-                    set({
-                        error: err.message || 'Error cargando rooms',
-                        loading: false,
-                    }) 
-                }
-            },
-            searchHotels: async (query: any) => {
+          
+            searchHotels: async (query: string) => {
                 if (query.length > 3) {
                     set({ loading: true, error: null })
                     try {
-                        const result = get().hotels.filter(
-                            (h) =>
-                                h.name
-                                    .toLowerCase()
-                                    .includes(query.toLowerCase()) ||
-                                h.id.toString().includes(query.toLowerCase())
-                        )
-                        set({ hotelsTemp: result, loading: false })
+                        const hotels: any[] = await roomService.searchHotels(query)
+                        set({ hotels, loading: false })
                     } catch (err: any) {
                         set({
                             error: err.message || 'Error cargando rooms',
@@ -56,7 +38,8 @@ export const useHotelsStore = create<HotelsState>()(
                     }
                 }
             },
+            
         }),
-        { name: 'hotels-store' }
+        { name: 'hotel-store' }
     )
 )

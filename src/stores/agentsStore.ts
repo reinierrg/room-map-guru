@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import type { IAgent, IdAgent } from '../services/room/room.types'
+import type { IAgent, RoomType } from '../services/room/room.types'
 import { initialValuesAgent } from './initialValus'
 
 interface AgentsState {
     agents: IAgent[]
     setAgents: (newRooms: IAgent[]) => void
-    getAgentById:(id: IdAgent) => IAgent
+    getAgentById:(id: RoomType) => IAgent
 }
 
 export const useAgentsStore = create<AgentsState>()(
@@ -17,10 +17,10 @@ export const useAgentsStore = create<AgentsState>()(
             setAgents: (agents: IAgent[]) =>
                 set(() => ({agents})),
 
-            getAgentById: (id: IdAgent) =>
+            getAgentById: (id: RoomType) =>
                 get().agents.find((type) => type.id === id),
             
         }),
-        { name: 'rooms-store' }
+        { name: 'agent-store' }
     )
 )

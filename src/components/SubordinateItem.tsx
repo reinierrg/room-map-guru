@@ -3,7 +3,7 @@ import {
     ChevronRight,
     Trash2,
 } from 'lucide-react'
-import type { IRoom } from '../services/room/room.types'
+import type { IRoom, RoomType } from '../services/room/room.types'
 
 export const SubordinateItem = ({
     room,
@@ -21,7 +21,7 @@ export const SubordinateItem = ({
     expandedPeople: Record<number, boolean>
     toggleExpanded: (id: number) => void
     removeRelation: (sup: number, sub: number) => void
-    getTypeById: (id: string) => any
+    getTypeById: (id: RoomType) => any
     relations: Record<number, number[]>
 }) => {
     const subordinates = relations[room.id] || []

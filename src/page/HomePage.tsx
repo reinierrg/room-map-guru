@@ -1,150 +1,39 @@
 import { useEffect, useState } from 'react'
 import { RoomsDashboard } from '../components/RoomsDashboard'
 import type { IHotel, IRoom } from '../services/room/room.types'
-import { 
-    Bed,
-    Binoculars,
-    ShieldQuestionMark,
-} from 'lucide-react'
-
 import { useHotels } from '../hooks/useHotels'
 import { useRooms } from '../hooks/useRooms'
 import { useRelations } from '../hooks/useRelations'
 import RoomMapper from '../models/RoomMapper'
 import { useAgents } from '../hooks/useAgents'
-
-
-const RoomsByType = ({
-    rooms,
-    type,
-    relations,
-}: {
-    rooms: IRoom[]
-    type: string
-    relations: object
-}) => {
-    const filteredRooms = rooms.filter((room) => room.type === type)
-    const { getAgentById } = useAgents()
-    const agent = getAgentById(type)
-
-    // Función para verificar si un room está relacionado
-    const isRoomRelated = (roomId: number): boolean => {
-        // Un room está relacionado si aparece como clave en relations O si aparece en algún array de valores
-        if (relations[roomId] && relations[roomId].length > 0) {
-            return true
-        }
-
-        // Verificar si el roomId aparece en los valores de otras relaciones
-        return Object.values(relations).some((relatedIds) =>
-            relatedIds.includes(roomId)
-        )
-    }
-
-    return (
-        <div>
-            {/* Estadísticas rápidas */}
-            <div className="mb-4 p-3 bg-gray-100 rounded-lg">
-                <p className="text-sm text-gray-600">
-                    Relacionados:{' '}
-                    {
-                        filteredRooms.filter(
-                            (room) => room.id && isRoomRelated(room.id)
-                        ).length
-                    }{' '}
-                    / {filteredRooms.length}
-                </p>
-            </div>
-            {filteredRooms.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredRooms.map((room) => {
-                        const related = room.id ? isRoomRelated(room.id) : false
-
-                        return (
-                            <div
-                                key={room.id}
-                                className={`rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow ${
-                                    related
-                                        ? 'bg-blue-50 border-blue-200 transform hover:scale-105'
-                                        : 'bg-white border-gray-200'
-                                } `}
-                            >
-                                <div className="p-4 border-gray-100">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className={`w-16 h-16 rounded-full flex items-center justify-center text-white`}
-                                            >
-                                                <img
-                                                    src={agent?.icon}
-                                                    width={16}
-                                                    height={16}
-                                                />
-                                            </div>
-                                            <h4 className="font-medium text-gray-800">
-                                                {room.name}
-                                            </h4>
-                                            <p className="text-sm text-gray-600">
-                                                ID: {room.id}
-                                            </p>                                    
-                                            <div className="mt-2 text-xs">
-                                                {room.occupancy && (
-                                                    <p>
-                                                        <ShieldQuestionMark size={18}/>: {' '}
-                                                        {room.occupancy}
-                                                    </p>
-                                                )}
-                                                {room.bed && (
-                                                    <p><Bed size={18}/> : {room.bed}</p>
-                                                )}
-                                                {room.view && (
-                                                    <p><Binoculars size={18}/>: {room.view}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-            ) : (
-                <p className="text-gray-500 text-center py-8">
-                    No hay rooms de tipo {type}
-                </p>
-            )}
-        </div>
-    )
-}
+import { RoomsByType } from '../components/RoomsByType'
+import { Search } from 'lucide-react'
+import Loading from '../components/Loading'
+import { Notification } from '../components/Notification'
 
 export default function HomePage() {
+    const { hotels, loading: hotelsLoading, searchHotels } = useHotels()
     const {
-        hotelsTemp,
-        loading: hotelsLoading,
-        loadHotels,
-        searchHotels,
-    } = useHotels()
-    const { rooms, loading: roomsLoading, loadRooms, saveRooms } = useRooms()
+        rooms,
+        loading: roomsLoading,
+        loadRooms,
+        setRooms,
+        saveRooms,
+    } = useRooms()
+    const { modified, relations } = useRelations()
     const { getAgentById } = useAgents()
 
-    const { modified, relations } = useRelations()
     const [searchTerm, setSearchTerm] = useState<string>('')
     const [selectedItem, setSelectedItem] = useState<IHotel | null>(null)
     const [showResults, setShowResults] = useState(false)
-    const [saveMessage, setSaveMessage] = useState<{
-        type: 'success' | 'error'
-        message: string
-    } | null>(null)
 
     const [activeTab, setActiveTab] = useState<
         'interno' | 'expedia' | 'hb' | 'hs'
     >('interno')
 
-    useEffect(() => {
-        loadHotels()
-    }, [])
-
     const handleSearchTerm = async () => {
-        if (searchTerm.length > 0) {
+        if (searchTerm.length >= 3) {
+            //@ts-ignore
             await searchHotels(searchTerm)
             setShowResults(true)
         } else {
@@ -159,6 +48,7 @@ export default function HomePage() {
     const handleClearSelection = () => {
         setSelectedItem(null)
         setSearchTerm('')
+        setRooms([])
         setShowResults(false)
     }
 
@@ -181,7 +71,6 @@ export default function HomePage() {
                 relations,
                 rooms as IRoom[]
             )
-            console.log(roomsToSave)
 
             if (selectedItem?.id) {
                 await saveRooms(selectedItem.id, roomsToSave)
@@ -201,136 +90,141 @@ export default function HomePage() {
         <div className="min-h-screen bg-gray-50 p-4 pb-20">
             {' '}
             {/* Añadido padding-bottom para evitar que el botón tape contenido */}
-            <header className="relative max-w-2xl mx-auto mb-8">
-                
-                <div className="flex flex-col items-center">
-                    <div className="relative w-full max-w-md">
-                        <div className="flex items-center">
-                            <input
-                                type="text"
-                                value={searchTerm}
-                                onChange={(e) => {
-                                    setSearchTerm(e.target.value)
-                                    if (selectedItem) setSelectedItem(null)
-                                }}
-                                onFocus={handleInputFocus}
-                                placeholder={
-                                    selectedItem ? '' : 'Buscar hotel...'
-                                }
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
-                                disabled={!!selectedItem}
-                            />
-                            {selectedItem ? (
-                                <button
-                                    type="button"
-                                    onClick={handleClearSelection}
-                                    className="ml-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                                    title="Limpiar selección"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-5 w-5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M6 18L18 6M6 6l12 12"
-                                        />
-                                    </svg>
-                                </button>
-                            ) : (
-                                <button
-                                    type="button"
-                                    className="ml-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                                    title="Buscar"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-5 w-5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                        />
-                                    </svg>
-                                </button>
-                            )}
+            <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md py-4">
+                <div className="container mx-auto px-2">
+                    <div className="flex flex-col items-center max-w-5xl mx-auto ">
+                        {/* Contenedor principal de búsqueda y selección */}
+                        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 p-0 bg-white rounded-xl">
+                            {/* Área de búsqueda/selección */}
+                            <div className="flex-grow">
+                                {!selectedItem ? (
+                                    <div className="relative">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="text"
+                                                value={searchTerm}
+                                                onChange={(e) => {
+                                                    setSearchTerm(
+                                                        e.target.value
+                                                    )
+                                                    if (selectedItem)
+                                                        setSelectedItem(null)
+                                                }}
+                                                onFocus={handleInputFocus}
+                                                placeholder="Buscar hotel..."
+                                                className="w-full px-2 py-2 text-lg rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+                                            />
+                                            <button
+                                                type="button"
+                                                className="ml-3 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                                title="Buscar"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-6 w-6"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-2">
+                                        <div>
+                                            <p className="font-semibold text-blue-800 text-sm">
+                                                HOTEL SELECCIONADO:
+                                            </p>
+                                            <p className="text-blue-600 text-xl font-bold">
+                                                {selectedItem.name}
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={handleClearSelection}
+                                            className="ml-4 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                                            title="Limpiar selección"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-6 w-6"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Botón de salvar - siempre visible pero condicional en estilo */}
+                            <button
+                                onClick={handleSave}
+                                disabled={!modified || !rooms?.length}
+                                className={`px-4 py-2 text-lg rounded-lg shadow font-medium transition-colors duration-200 min-w-[120px]
+          ${
+              modified && rooms?.length
+                  ? 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
+                            >
+                                Salvar
+                            </button>
                         </div>
 
-                        {selectedItem && (
-                            <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                <p className="font-semibold text-blue-800">
-                                    Hotel seleccionado:
-                                </p>
-                                <p className="text-blue-600">
-                                    {selectedItem.name}
-                                </p>
+                        {/* Resultados de búsqueda */}
+                        {showResults && !selectedItem && hotels.length > 0 && (
+                            <div className="w-full bg-white rounded-lg shadow-lg border border-gray-200 max-h-72 overflow-auto mt-2">
+                                {hotels.map((hotel: IHotel) => (
+                                    <div
+                                        key={hotel.id}
+                                        className="p-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+                                        onClick={() =>
+                                            handleSelectedItem(hotel)
+                                        }
+                                    >
+                                        <p className="font-medium text-lg">
+                                            {hotel.name}
+                                        </p>
+                                    </div>
+                                ))}
                             </div>
                         )}
 
                         {showResults &&
+                            !hotelsLoading &&
                             !selectedItem &&
-                            hotelsTemp.length > 0 && (
-                                <div className="mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-200 max-h-60 overflow-auto">
-                                    {hotelsTemp.map((hotel: IHotel) => (
-                                        <div
-                                            key={hotel.id}
-                                            className="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0"
-                                            onClick={() =>
-                                                handleSelectedItem(hotel)
-                                            }
-                                        >
-                                            <p className="font-medium">
-                                                {hotel.name}
-                                            </p>
-                                            {hotel.location && (
-                                                <p className="text-sm text-gray-500">
-                                                    {hotel.location}
-                                                </p>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                        {showResults &&
-                            !selectedItem &&
-                            hotelsTemp.length === 0 &&
+                            hotels.length === 0 &&
                             searchTerm.length > 0 && (
-                                <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <div className="w-full p-4 bg-yellow-50 border border-yellow-200 rounded-lg mt-2">
                                     <p className="text-yellow-800">
-                                        No se encontraron hoteles
+                                        No se encontraron hoteles con "
+                                        {searchTerm}"
                                     </p>
                                 </div>
                             )}
                     </div>
                 </div>
-                {rooms.length > 0 && activeTab === 'interno' && (
-                <button
-                    onClick={handleSave}
-                    disabled={!modified}
-                    className={`fixed top-18 right-6 px-6 py-3 rounded-lg shadow-lg font-medium transition-colors duration-200 z-50
-          ${
-              modified
-                  ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
-                  : 'bg-gray-400 text-gray-200 cursor-not-allowed'
-          }`}
-                >
-                    Salvar
-                </button>
-            )}
             </header>
+            {/* Espacio para el header fijo */}
+            <div className="h-20"></div>
             <main className="max-w-6xl mx-auto">
-                {selectedItem ? (
+                {roomsLoading && <Loading />}
+                {selectedItem && !roomsLoading ? (
                     <div className="mt-6">
                         {/* Tabs de navegación */}
                         <div className="border-b border-gray-200 mb-6">
@@ -414,7 +308,10 @@ export default function HomePage() {
                                         <h2 className="text-xl font-bold mb-4">
                                             Rooms PriceTravel
                                         </h2>
-                                        <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mt-1 " style={{height: '1.8rem'}}>
+                                        <span
+                                            className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mt-1 "
+                                            style={{ height: '1.8rem' }}
+                                        >
                                             Habitacion Base
                                         </span>
                                     </div>
@@ -431,7 +328,6 @@ export default function HomePage() {
                                     <RoomsByType
                                         rooms={rooms}
                                         type="Expedia"
-                                        relations={relations}
                                     />
                                 </div>
                             )}
@@ -444,7 +340,6 @@ export default function HomePage() {
                                     <RoomsByType
                                         rooms={rooms}
                                         type="HB"
-                                        relations={relations}
                                     />
                                 </div>
                             )}
@@ -457,38 +352,28 @@ export default function HomePage() {
                                     <RoomsByType
                                         rooms={rooms}
                                         type="HS"
-                                        relations={relations}
                                     />
                                 </div>
                             )}
                         </div>
                     </div>
-                ) : (
-                    <div className="text-center py-12 text-gray-500">
-                        <p>
+                ) : !roomsLoading ? (
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 mb-4">
+                            <Search size={48} className="mx-auto" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
                             Busca y selecciona un hotel para ver sus
                             habitaciones
-                        </p>
-                        <p className="text-sm mt-2">
+                        </h3>
+                        <p className="text-gray-500">
                             Escribe en el campo de búsqueda para filtrar
                         </p>
                     </div>
-                )}
+                    
+                ): ''}
             </main>
-            {/* Mensaje de guardado */}
-            {saveMessage && (
-                <div
-                    className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-                        saveMessage.type === 'success'
-                            ? 'bg-green-100 text-green-800 border border-green-200'
-                            : 'bg-red-100 text-red-800 border border-red-200'
-                    }`}
-                >
-                    {saveMessage.message}
-                </div>
-            )}
-            {/* Botón Flotante "Salvar" */}
-            
+          <Notification />
         </div>
     )
 }

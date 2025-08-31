@@ -1,13 +1,17 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
+export interface IRoomRelations {
+  [key: number]: number[];
+}
+
 interface RelationsState {
-    relations: { [key: number]: number[] }
+    relations: IRoomRelations
     loading: boolean
     error: string | null
     modified: boolean;
 
-    setRelations: (newRelations: { [key: number]: number[] }, modified: boolean) => void;
+    setRelations: (newRelations: IRoomRelations, modified?: boolean) => void;
     addRelation: (supervisorId: number, subordinateId: number) => void
     removeRelation: (supervisorId: number, subordinateId: number) => void
     deleteRelation: (personId: number) => void

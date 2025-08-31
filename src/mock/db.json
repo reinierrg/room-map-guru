@@ -2802,21 +2802,8 @@
             "mapExpedia": "",
             "maphb": "",
             "maphs": ""
-        },
-        {
-            "type": "HS",
-            "idroom": 25781168,
-            "name": "25781168-Run Of House (4/2-0)1 Cama,2 Camas (sujeto a disponibilidad) De acuerdo a la hab reservada",
-            "uri": "",
-            "occupancy": true, 
-            "bed": 2,
-            "view": "", 
-            "area": "",
-            "map": 0,
-            "mapExpedia": "",
-            "maphb": "",
-            "maphs": ""
         }
+       
     ],
     "suppliers": [
         {

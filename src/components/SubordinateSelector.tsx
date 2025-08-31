@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react'
-import type { IRoom } from '../services/room/room.types'
+import type { IRoom, RoomType } from '../services/room/room.types'
 
 export const SubordinateSelector = ({
     availableSubordinates,
@@ -12,7 +12,7 @@ export const SubordinateSelector = ({
     onSelect: (id: number) => void
     onSearchChange: (value: string) => void
     searchValue: string
-    getTypeById: (id: string) => any
+    getTypeById: (id: RoomType) => any
 }) => (
     <div className="p-4 border-b border-gray-100 bg-gray-50">
         <div className="mb-3">

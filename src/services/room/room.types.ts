@@ -13,21 +13,14 @@ export interface IRoom {
     mapHs?: number[];
     map?: string;
     price?: number;
-}
-
-export interface IRoomMapping {
-    sourceId: string;
-    targetId: string;
-    provider: RoomType;
-    similarity?: number;
+    occupancy?: boolean, 
+    bed?: number,
+    view?: string, 
 }
 
 export interface IHotelSearchResult {
-    id: number;
+    id: string;
     name: string;
-    location: string;
-    rating?: number;
-    thumbnail?: string;
 }
 
 export interface IHotel {
@@ -37,15 +30,8 @@ export interface IHotel {
     icon: string,
 }
 
-export interface AutoMapRequest {
-    hotelId: string;
-    similarityThreshold: number;
-}
-
-export type IdAgent = 'Interno' | 'Expedia' | 'HB' | 'HS'
-
 export interface IAgent {
-    id: IdAgent,
+    id: RoomType,
     name: string,
     color: string,
     icon: string

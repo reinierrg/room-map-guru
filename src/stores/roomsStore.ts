@@ -3,9 +3,10 @@ import { devtools } from 'zustand/middleware'
 import { roomService } from '../services/room/room.service'
 import type { IRoom } from '../services/room/room.types'
 import { useRelationsStore } from './relationsStore'
+import { useNotificationStore } from './notificationStore'
 
 interface RoomsState {
-    rooms: Partial<IRoom>[]
+    rooms: IRoom[]
     loading: boolean
     error: string | null
     setRooms: (newRooms: IRoom[]) => void
@@ -74,13 +75,30 @@ export const useRoomsStore = create<RoomsState>()(
                 set({ loading: true, error: null })
                 try {
                     await roomService.saveRooms(hotelId, newRooms)
-                    useRelationsStore.setState({modified: false})
+                    useRelationsStore.setState({ modified: false })
+                    useNotificationStore
+                        .getState()
+                        .addNotification({
+                            type: 'info',
+                            message: 'habitacioens salvadas con exito',
+                            id: crypto.randomUUID(),
+                        })
                     set({ loading: false })
                 } catch (err: any) {
+
+                    useNotificationStore
+                        .getState()
+                        .addNotification({
+                            type: 'error',
+                            message: 'Error al salvar las habitaciones del hotel',
+                            id: crypto.randomUUID(),
+                        })
+                        
                     set({
                         error: err.message || 'Error cargando rooms',
                         loading: false,
                     })
+                   
                 }
             },
         }),

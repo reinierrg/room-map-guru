@@ -43,32 +43,20 @@ const mapRoomType = (type: string): RoomType => {
 
 // Define the expected shape of the API hotel object
 interface IApiHotel {
-    id: number;
-    name: string;
+    document: {
+        code:string,
+        title: string,
+    }
     location: string;
     rating: number;
     thumbnail: string;
 }
 
 // Mapea la respuesta de búsqueda de hoteles
-export const mapApiHotelToSearchResult = (apiHotel: IApiHotel): IHotelSearchResult => ({
-    id: apiHotel.id,
-    name: apiHotel.name,
-    location: apiHotel.location,
-    rating: apiHotel.rating,
-    thumbnail: apiHotel.thumbnail
-});
+export const mapApiHotelToSearchResult = (apiHotel: IApiHotel): IHotelSearchResult => {
+    return {
+        id: apiHotel?.document.code,
+        name: apiHotel?.document.title,     
+    }
+};
 
-
-// Define the expected shape of the API hotel object
-interface IApiHotellocal {
-    hotelId: number;
-    nombre: string;
-    
-}
-
-// Mapea la respuesta de búsqueda de hoteles
-export const mapApiHotellocalToSearchResult = (apiHotel: IApiHotellocal): Partial<IHotelSearchResult> => ({
-    id: apiHotel.hotelId,
-    name: apiHotel.nombre
-});

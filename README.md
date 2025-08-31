@@ -53,3 +53,14 @@ npm run mock      # Inicia json-server con datos en src/mock/db.json
 
 ## Datos simulados
 - Se utilizan datos simulados desde src/mock/db.json y rutas personalizadas desde src/mock/routes.json. Esto permite simular peticiones reales de backend sin conexión externa.
+
+# Despliege en producción 
+## Ejecutamos
+npm run build:prod
+## Existen tres variables de entorno donde definimos 
+- VITE_API_BASE_URL=http://localhost:4001 
+  ### Definimos el api al que nos debemos conectar para obtener la lista de cuartos
+- VITE_API_HOTEL_SEARCH=https://v97cnb0e48gkz1iyp.a1.typesense.net/multi_search
+  ### Definimos la url del recurso donde debemos buscar los hoteles
+- VITE_API_HOTEL_SEARCH_TOKEN=zyLBfgJbUWYjeevMiscpqeHEQ8lb6qJV
+  ### Definimos el token se usamos para conectarnos recurso que nos proporciona los hoteles
