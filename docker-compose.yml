@@ -1,12 +1,57 @@
 version: "3.9"
 
+networks:
+  net-hotel:
+
 services:
-  frontend:
-    build: .
-    container_name: room-map-guru
+  nginx:
+    build: ./nginx
+    container_name: nginx-hotel
+    restart: always
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
     ports:
-      - "8080:80"
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - net-hotel
+
+  frontend:
+    build: ./frontend
+    # Removed ports
+    depends_on:
+      - backend
     environment:
-      - VITE_API_BASE_URL=
-      - VITE_API_HOTEL_SEARCH=
-      - VITE_API_HOTEL_SEARCH_TOKEN=
+      - VITE_API_BASE_URL=/api
+      - VITE_API_HOTEL_SEARCH=https://v97cnb0e48gkz1iyp.a1.typesense.net/multi_search
+      - VITE_API_HOTEL_SEARCH_TOKEN=zyLBfgJbUWYjeevMiscpqeHEQ8lb6qJV
+    networks:
+      - net-hotel
+
+  backend:
+    build: ./backend
+    # Removed ports
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=sa
+      - DB_PASS=Admin&Sql
+      - DB_NAME=room_map_guru
+    networks:
+      - net-hotel
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Admin&Sql"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - ./docker/sqlserver-data:/var/opt/mssql
+    networks:
+      - net-hotel
