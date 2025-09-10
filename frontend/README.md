@@ -43,7 +43,6 @@ npm run preview   # Visualiza el build
 npm run mock      # Inicia json-server con datos en src/mock/db.json
 ```
 
- 
 ## Tecnologías usadas
 - React + TypeScript
 - Vite
@@ -64,3 +63,12 @@ npm run build:prod
   ### Definimos la url del recurso donde debemos buscar los hoteles
 - VITE_API_HOTEL_SEARCH_TOKEN=
   ### Definimos el token se usamos para conectarnos recurso que nos proporciona los hoteles
+
+
+# Docker 
+
+## Acceder al contenedor de frontend
+docker exec -it frontend sh
+
+## chequeo de variables de entorno
+echo $VITE_API_BASE_URL

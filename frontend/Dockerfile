@@ -18,16 +18,20 @@ RUN npm run build
 # Etapa 2: servir con nginx
 FROM nginx:alpine
 
-# Eliminar la config default
+# Limpiar default
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copiar los archivos generados en la build
+# Copiar build al nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copiar configuración nginx opcional (si necesitas rewrite)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Variables de build (pueden venir del docker-compose también)
+ENV VITE_API_BASE_URL=/api
+ENV VITE_API_HOTEL_SEARCH=https://v97cnb0e48gkz1iyp.a1.typesense.net/multi_search
+ENV VITE_API_HOTEL_SEARCH_TOKEN=zyLBfgJbUWYjeevMiscpqeHEQ8lb6qJV
 
-# Exponer puerto 3000
-# EXPOSE 3000
+# Copiar config custom de nginx (para proxy hacia backend)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]

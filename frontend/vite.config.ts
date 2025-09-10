@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
     
     // Configuración del servidor de desarrollo
     server: {
-      port: parseInt(env.VITE_PORT || '3000'),
+      port: parseInt(env.VITE_PORT || '5173'),
       open: true,
       proxy: useProxy
         ? {

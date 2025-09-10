@@ -11,7 +11,7 @@ const config = {
     database: process.env.DB_NAME as string,
     port: Number(process.env.DB_PORT) || 1433,
     options: {
-      encrypt: false, // poner true si usas Azure
+      encrypt: true, // poner true si usas Azure
       trustServerCertificate: true,
     },
   },

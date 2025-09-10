@@ -3,45 +3,10 @@ version: "3.9"
 networks:
   net-hotel:
 
+volumes:
+  sqlserver-data:
+
 services:
-  nginx:
-    build: ./nginx
-    container_name: nginx-hotel
-    restart: always
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-      - frontend
-    networks:
-      - net-hotel
-
-  frontend:
-    build: ./frontend
-    # Removed ports
-    depends_on:
-      - backend
-    environment:
-      - VITE_API_BASE_URL=/api
-      - VITE_API_HOTEL_SEARCH=https://v97cnb0e48gkz1iyp.a1.typesense.net/multi_search
-      - VITE_API_HOTEL_SEARCH_TOKEN=zyLBfgJbUWYjeevMiscpqeHEQ8lb6qJV
-    networks:
-      - net-hotel
-
-  backend:
-    build: ./backend
-    # Removed ports
-    depends_on:
-      - db
-    environment:
-      - DB_HOST=db
-      - DB_USER=sa
-      - DB_PASS=Admin&Sql
-      - DB_NAME=room_map_guru
-    networks:
-      - net-hotel
 
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -49,9 +14,45 @@ services:
     ports:
       - "1433:1433"
     environment:
-      SA_PASSWORD: "Admin&Sql"
+      SA_PASSWORD: "Admin!Sql123"
       ACCEPT_EULA: "Y"
     volumes:
-      - ./docker/sqlserver-data:/var/opt/mssql
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - net-hotel
+
+  backend:
+    build:
+      context: ./backend
+      target: dev   # 👈 para desarrollo
+    container_name: backend
+    restart: always
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules   # evita sobrescribir node_modules
+    working_dir: /usr/src/app
+    command: npm run dev
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=sa
+      - DB_PASS=Admin!Sql123
+      - DB_NAME=room-map-guru
+      - DB_PORT=1433
+    networks:
+      - net-hotel
+    #En producción solo cambias target: prod y command: npm run start.
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"   # 👈 este es el único que expones hacia el host
     networks:
       - net-hotel
