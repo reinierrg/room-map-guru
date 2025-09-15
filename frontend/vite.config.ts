@@ -4,13 +4,9 @@ import tailwindcss from '@tailwindcss/vite'
 import { resolve } from 'path'
 
 export default defineConfig(({ mode }) => {
-  // Cargar todas las variables de entorno
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
-  
   const useProxy = env.VITE_NODE_ENV === 'development';
   const baseUrl = env.VITE_API_BASE_URL;
-  console.log(useProxy)
-  console.log(baseUrl)
   return {
     plugins: [react(), tailwindcss()],
     root: '.',
@@ -52,11 +48,11 @@ export default defineConfig(({ mode }) => {
            '/api': {
             target: baseUrl,
             changeOrigin: true,
+            secure: false,
             rewrite: (path) => path.replace(/^\/api/, ''),
           },
         }
         : undefined
-
     },
 
     // Resolución de paths

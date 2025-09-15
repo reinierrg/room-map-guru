@@ -1,6 +1,7 @@
 import express from "express";
 import sql from "mssql";
 import config from "./config";
+import cors from "cors";
 
 class Room {
   type: string = "";
@@ -54,13 +55,22 @@ async function getRooms(query: string | undefined) {
   myr.forEach((thisroom) => {
     if (thisroom.type === "Interno") {
       myr.forEach((thisroom2) => {
-        if (thisroom2.type === "Expedia" && thisroom2.map.toString() === thisroom.idroom.toString()) {
+        if (
+          thisroom2.type === "Expedia" &&
+          thisroom2.map.toString() === thisroom.idroom.toString()
+        ) {
           thisroom.mapExpedia += `,${thisroom2.idroom},`;
         }
-        if (thisroom2.type === "HB" && thisroom2.map.toString() === thisroom.idroom.toString()) {
+        if (
+          thisroom2.type === "HB" &&
+          thisroom2.map.toString() === thisroom.idroom.toString()
+        ) {
           thisroom.maphb += `,${thisroom2.idroom},`;
         }
-        if (thisroom2.type === "HS" && thisroom2.map.toString() === thisroom.idroom.toString()) {
+        if (
+          thisroom2.type === "HS" &&
+          thisroom2.map.toString() === thisroom.idroom.toString()
+        ) {
           thisroom.maphs += `,${thisroom2.idroom},`;
         }
       });
@@ -72,6 +82,14 @@ async function getRooms(query: string | undefined) {
 
 const app = express();
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 app.get("/", (_, res) => {
   res.json({ message: "Backend corriendo 🚀" });
@@ -87,48 +105,26 @@ app.get("/api/rooms/:hotelId", async (req, res) => {
   }
 });
 
-app.post("/api/rooms/:hotelId", async (req, res) => {
-  const hotelId = parseInt(req.params.hotelId, 10);
-  const { rooms } = req.body;
+app.post("/api/rooms/relations", async (req, res) => {
+  const { relationRooms } = req.body;
 
-  if (!hotelId || !Array.isArray(rooms)) {
-    return res.status(400).json({ error: "hotelId y rooms son requeridos" });
+  if (!Array.isArray(relationRooms) || relationRooms.length === 0) {
+    return res.status(400).json({ message: "No se recibieron relaciones" });
   }
 
   try {
-    // Crear TVP en memoria
-    const table = new sql.Table("RoomMapGuruType");
-    table.columns.add("IdRoom", sql.BigInt, { nullable: false });
-    table.columns.add("name", sql.NVarChar(500), { nullable: false });
-    table.columns.add("type", sql.NVarChar(50), { nullable: false });
-    table.columns.add("uri", sql.NVarChar(500), { nullable: true });
-    table.columns.add("map", sql.Int, { nullable: false });
-    table.columns.add("orden", sql.Int, { nullable: false });
+    const pool = await getPool(); // pool único
+    for (const { room1, room2 } of relationRooms) {
+      await pool.request()
+        .input("roomId1", sql.BigInt, room1)
+        .input("roomId2", sql.BigInt, room2)
+        .execute("sp_Saveroommapguru");
+    }
 
-    // Llenar tabla con los datos del request
-    rooms.forEach((room: any) => {
-      table.rows.add(
-        room.id,
-        room.name,
-        room.type,
-        room.uri || "",
-        room.map || 0,
-        room.orden || 0
-      );
-    });
-
-    // Ejecutar SP
-    const pool = await getPool();
-    const request = pool.request();
-    request.input("HotelId", sql.Int, hotelId);
-    request.input("Rooms", table);
-
-    await request.execute("sp_Saveroommapguru");
-
-    res.json({ message: "Habitaciones guardadas correctamente 🚀" });
+    res.status(200).json({ message: "Relaciones guardadas correctamente" });
   } catch (error: any) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
+    console.error("Error al guardar relaciones:", error);
+    res.status(500).json({ message: "Error al guardar relaciones", error: error.message });
   }
 });
 

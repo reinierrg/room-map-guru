@@ -72,10 +72,8 @@ export default function HomePage() {
                 rooms as IRoom[]
             )
 
-            console.log(roomsToSave)
-
             if (selectedItem?.id) {
-                await saveRooms(selectedItem.id, roomsToSave)
+                await saveRooms(roomsToSave)
             }
         } catch (error) {
             console.error('Error al guardar:', error)

@@ -1,5 +1,5 @@
 # Ejecutar en el docker el servidor sql server
-docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Admin!Sql123" -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2022-latest
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Admin!Sql123" -p 1433:1433 --name sqlserverdb -d mcr.microsoft.com/mssql/server:2022-latest
 
 
 # Probar conexion en docker desde el contenedor

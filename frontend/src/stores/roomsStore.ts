@@ -12,7 +12,7 @@ interface RoomsState {
     setRooms: (newRooms: IRoom[]) => void
     loadRooms: (hotelId: number) => Promise<void>
     processRoomMappings: (newRooms: IRoom[]) => void
-    saveRooms: (hotelId: number, newRooms: Partial<IRoom>[]) => void
+    saveRooms: (relationRooms: Map<number, number>) => void
 }
 
 export const useRoomsStore = create<RoomsState>()(
@@ -71,10 +71,10 @@ export const useRoomsStore = create<RoomsState>()(
                 })
                 useRelationsStore.getState().setRelations(relations, false)
             },
-            saveRooms: async (hotelId: number, newRooms: Partial<IRoom>[]) => {
+            saveRooms: async (relationRooms: Map<number, number>) => {
                 set({ loading: true, error: null })
                 try {
-                    await roomService.saveRooms(hotelId, newRooms)
+                    await roomService.saveRooms(relationRooms)
                     useRelationsStore.setState({ modified: false })
                     useNotificationStore
                         .getState()

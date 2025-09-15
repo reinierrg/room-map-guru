@@ -71,39 +71,42 @@ export default class RoomMapper {
     /**
      * Función para mapear las relaciones a los formatos específicos de cada tipo de room
      */
-   static mapRelationsToRoomTypes(
-    relations: { [key: number]: number[] },
-    allRooms: IRoom[]
-): Partial<IRoom>[] {
-    // Crear un mapa de rooms por ID para acceso rápido
-    const roomsById = new Map<number, IRoom>();
-    allRooms.forEach((room) => {
-        if (room.id) {
-            roomsById.set(room.id, room);
-        }
-    });
+    static mapRelationsToRoomTypes(
+        relations: { [key: number]: number[] },
+        allRooms: IRoom[]
+    ): Map<number, number> {
+        // Crear un mapa de rooms por ID para acceso rápido
+        const roomsById = new Map<number, IRoom>()
+        allRooms.forEach((room) => {
+            if (room.id) {
+                roomsById.set(room.id, room)
+            }
+        })
 
-    const relationMap: Map<number, number> = new Map();
+        const relationMap: Map<number, number> = new Map()
 
-    // Procesar cada relación para agrupar por tipo de room destino
-    Object.entries(relations).forEach(([sourceRoomIdStr, targetRoomIds]) => {
-        const sourceRoomId = parseInt(sourceRoomIdStr);
-        const sourceRoom = roomsById.get(sourceRoomId);
-        
-        if (!sourceRoom) return;
+        // Procesar cada relación para agrupar por tipo de room destino
+        Object.entries(relations).forEach(
+            ([sourceRoomIdStr, targetRoomIds]) => {
+                const sourceRoomId = parseInt(sourceRoomIdStr)
+                const sourceRoom = roomsById.get(sourceRoomId)
 
-        targetRoomIds.forEach(targetRoomId => {
-            const targetRoom = roomsById.get(targetRoomId);
-            if (!targetRoom) return;
-         
-            relationMap.set(targetRoomId, sourceRoomId)
+                if (!sourceRoom) return
 
-        });
-    });
+                targetRoomIds.forEach((targetRoomId) => {
+                    const targetRoom = roomsById.get(targetRoomId)
+                    if (!targetRoom) return
 
-    console.log(relationMap)
+                    relationMap.set(targetRoomId, sourceRoomId)
+                })
+            }
+        )
 
-    // Crear el nuevo array de rooms con los mapeos actualizados
+
+        return relationMap;
+
+        // Crear el nuevo array de rooms con los mapeos actualizados
+        /*
     return allRooms.map(room => {
         if (!room.id) return room;
 
@@ -116,6 +119,6 @@ export default class RoomMapper {
             type: room.type,
             uri: room.uri
         };
-    });
-}
+    });*/
+    }
 }
