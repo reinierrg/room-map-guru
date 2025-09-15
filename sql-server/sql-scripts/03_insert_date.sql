@@ -1,16 +1,3 @@
--- Crear la tabla si no existe
-	IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='RoomMapGuru' AND xtype='U')
-	CREATE TABLE RoomMapGuru (
-		HotelId INT NOT NULL,
-		[type] NVARCHAR(50) NOT NULL,
-		IdRoom BIGINT NOT NULL, 
-		[name] NVARCHAR(500) NOT NULL,
-		uri NVARCHAR(500) NULL,
-		[map] INT NOT NULL DEFAULT 0,
-		orden INT NOT NULL DEFAULT 0,
-		CONSTRAINT PK_RoomMapGuru PRIMARY KEY (HotelId, IdRoom)
-	);
-
 -- Insertar los datos
 INSERT INTO dbo.RoomMapGuru (HotelId, [type], IdRoom, name, uri, [map], orden)
 VALUES
@@ -236,3 +223,4 @@ VALUES
 	 (100111, N'HB',6865843,N'6865843-Room Deluxe (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
 	 (100111, N'Roibos',25781168,N'25781168-Run Of House (4/2-0)1 Cama,2 Camas (sujeto a disponibilidad) De acuerdo a la hab reservada',N'',0,4),
 	 (100111, N'HS',25781169,N'25781168-Run Of House (4/2-0)1 Cama,2 Camas (sujeto a disponibilidad) De acuerdo a la hab reservada',N'',0,7);
+GO

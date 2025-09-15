@@ -1,0 +1,308 @@
+-- ================================
+-- Crear base de datos si no existe
+-- ================================
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'room-map-guru')
+BEGIN
+    CREATE DATABASE [room-map-guru];
+END
+GO
+
+-- ================================
+-- Usar la base de datos
+-- ================================
+USE [room-map-guru];
+GO
+
+-- ================================
+-- Crear tabla RoomMapGuru
+-- ================================
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='RoomMapGuru' AND xtype='U')
+BEGIN
+    CREATE TABLE RoomMapGuru (
+        HotelId INT NOT NULL,
+        [type] NVARCHAR(50) NOT NULL,
+        IdRoom BIGINT NOT NULL, 
+        [name] NVARCHAR(500) NOT NULL,
+        uri NVARCHAR(500) NULL,
+        [map] INT NOT NULL DEFAULT 0,
+        orden INT NOT NULL DEFAULT 0,
+        CONSTRAINT PK_RoomMapGuru PRIMARY KEY (HotelId, IdRoom)
+    );
+END
+GO
+
+-- ================================
+-- Procedimiento: sp_RoomMapGuru
+-- ================================
+IF EXISTS (SELECT * FROM sysobjects WHERE name='sp_RoomMapGuru' AND xtype='P')
+    DROP PROCEDURE sp_RoomMapGuru;
+GO
+
+CREATE PROCEDURE sp_RoomMapGuru
+    @hotelId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        [type],
+        IdRoom,
+        [name],
+        uri,
+        [map],
+        orden,
+        HotelId
+    FROM dbo.RoomMapGuru
+    WHERE HotelId = @hotelId
+    ORDER BY orden, [name];
+END;
+GO
+
+-- ================================
+-- Procedimiento: sp_Saveroommapguru
+-- ================================
+IF EXISTS (SELECT * FROM sysobjects WHERE name='sp_Saveroommapguru' AND xtype='P')
+    DROP PROCEDURE sp_Saveroommapguru;
+GO
+
+CREATE PROCEDURE sp_Saveroommapguru
+    @roomId1 BIGINT,
+    @roomId2 BIGINT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE RoomMapGuru
+    SET map = @roomId2
+    WHERE IdRoom = @roomId1;
+END
+GO
+
+-- ================================
+-- Insertar datos iniciales
+-- ================================
+INSERT INTO RoomMapGuru (HotelId, [type], IdRoom, [name], uri, [map], orden)
+VALUES
+(100111,N'Interno',1004379,N'1004379-Deluxe King (3/2-2) 1 King Obstruida',N'http://cdn.precioyviajes.com/00/02/49/00024919_rp.jpg',0,0),
+	 (100111,N'Interno',1053501,N'1053501-Deluxe family ocean view (2 rooms) (5/5-6) 1 King|2 Queens Sujeto a disponibilidad',N'',0,0),
+	 (100111,N'Interno',3928879,N'3928879-Deluxe family double ocean view (2 rooms) (6/6-7) 4 Matrimoniales Sujeto a disponibilidad',N'',0,0),
+	 (100111,N'Interno',3942879,N'3942879-Rock Suite ocean view (1 room) (4/2-2) 1 King|1 Sofá cama matrimonial Sujeto a disponibilidad',N'',0,0),
+	 (100111,N'Interno',4715176,N'4715176-Deluxe room double (4/3-4) 2 Matrimoniales Obstruida',N'',0,0),
+	 (100111,N'Interno',4715178,N'4715178-Diamond Ocean View King (2/2-0) 1 King Sujeto a disponibilidad',N'',0,0),
+	 (100111,N'Interno',4715179,N'4715179-Deluxe Family Lagoon View (Two Bedroom) (5/5-8) 2 Matrimoniales|1 King Laguna',N'',0,0),
+	 (100111,N'Interno',4715180,N'4715180-Deluxe Lagoon View Double (4/3-4) 2 Matrimoniales Laguna',N'',0,0),
+	 (100111,N'Interno',4715181,N'4715181-Deluxe Lagoon View King (3/2-2) 1 King Laguna',N'',0,0),
+	 (100111,N'Interno',4715184,N'4715184-Deluxe Ocean View Double (4/3-4) 2 Matrimoniales Sujeto a disponibilidad',N'',0,0),
+	 (100111,N'Interno',4715185,N'4715185-Deluxe Ocean View King (3/2-1) 1 King Sujeto a disponibilidad',N'',0,0),
+	 (100111,N'Interno',4715186,N'4715186-Rock Royalty Ocean View King (2/2-0) 1 King Sujeto a disponibilidad',N'',0,0),
+	 (100111,N'Interno',4715188,N'4715188-Rock Suite Ocean View (Two Bedroom) (5/5-8) 1 King|2 Matrimoniales Sujeto a disponibilidad',N'',0,0),
+	 (100111,N'Expedia',10165987,N'10165987-Rock Suite Ocean View (Two Bedroom) (6/6-5)Sujeto a disponibilidad Sujeto a disponibilidad',N'',4715188,1),
+	 (100111,N'Expedia',10165989,N'10165989-Diamond Ocean View (2/2-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715178,1),
+	 (100111,N'Expedia',10165990,N'10165990-Suite, 1 Bedroom (Rock) (4/2-2)Sujetas a disponibilidad Sujeto a disponibilidad',N'',3942879,1),
+	 (100111,N'Expedia',10165991,N'10165991-Rock Royalty Ocean View King (2/2-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715186,1),
+	 (100111,N'Expedia',10165992,N'10165992-Deluxe Ocean View King (3/2-2)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,1),
+	 (100111,N'Expedia',10165993,N'10165993-Deluxe Lagoon view king (3/2-2)Sujetas a disponibilidad Vistas a la laguna',N'',4715181,1),
+	 (100111,N'Expedia',10165994,N'10165994-Deluxe Ocean View Double (4/3-2)Sujeto a disponibilidad Sujeto a disponibilidad',N'',4715184,1),
+	 (100111,N'Expedia',10165996,N'10165996-Deluxe Lagoon view double (4/3-2)Sujeto a disponibilidad Vistas a la laguna',N'',4715180,1),
+	 (100111,N'Expedia',10165997,N'10165997-Deluxe Family Lagoon View (Two Bedroom) (5/5-4)Sujeto a disponibilidad Vistas a la laguna',N'',4715179,1),
+	 (100111,N'Expedia',10165998,N'10165998-Deluxe Room, 1 King Bed (3/2-2)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,1),
+	 (100111,N'Expedia',10165999,N'10165999-Deluxe Room, 2 Double Beds (4/3-2)Sujeto a disponibilidad Sujeto a disponibilidad',N'',4715176,1),
+	 (100111,N'Expedia',16406673,N'16406673-Deluxe Family Ocean View - Two Bedroom (5/5-4)Sujeto a disponibilidad Sujeto a disponibilidad',N'',3928879,1),
+	 (100111,N'Expedia',16406674,N'16406674-Deluxe Family Ocean View Double Beds - Two Bedroom (6/6-5)Sujeto a disponibilidad Sujeto a disponibilidad',N'',1053501,1),
+	 (100111,N'Expedia',25808561,N'25808561-Deluxe Room, 1 King Bed, Lagoon View (Classic) (3/2-2) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808562,N'25808562-Classic Room, 2 Bedrooms, Ocean View (Deluxe Family, Double Beds) (6/6-5) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808563,N'25808563-Deluxe Room, 2 Double Beds, Lagoon View (Classic) (4/3-3) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808564,N'25808564-Classic Room, 2 Bedrooms, Lagoon View (Deluxe Family) (5/5-4) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808565,N'25808565-Classic Room, 2 Bedrooms, Ocean View (Deluxe Family) (5/5-4) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808566,N'25808566-Classic Room, 1 King Bed, Ocean View (Diamond) (2/2-0) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808567,N'25808567-Classic Room, Accessible, Lagoon View (4/4-3) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808568,N'25808568-Deluxe Room, 2 Double Beds (Classic) (4/3-3) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808569,N'25808569-Deluxe Room, 1 King Bed (Classic) (3/2-2) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808570,N'25808570-Deluxe Room, 2 Double Beds, Ocean View (Classic) (4/3-3) De acuerdo a la hab reservada',N'',0,1),
+	 (100111,N'Expedia',25808571,N'25808571-Deluxe Room, 1 King Bed, Ocean View (Classic) (3/2-2) De acuerdo a la hab reservada',N'',0,1),
+	 (100111, N'HB',16073920,N'16073920-Double Luxury (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16073922,N'16073922-Family Room Standard (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16073924,N'16073924-Double Luxury Sea View (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,2),
+	 (100111, N'HB',16073925,N'16073925-Suite Ocean View Two Double Beds (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',3942879,2),
+	 (100111, N'HB',16073928,N'16073928-Family Room Connecting Room (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16073931,N'16073931-Suite Deluxe Sea View (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,2),
+	 (100111, N'HB',16073933,N'16073933-Double Or Twin Deluxe (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16073934,N'16073934-Double Deluxe Lagoon View (4/2-0)1 Cama king size 150-183 ancho Sujeto a disponibilidad',N'',4715181,2),
+	 (100111, N'HB',16073937,N'16073937-Family Room Luxury (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16073938,N'16073938-Double Deluxe Sea View (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,2),
+	 (100111, N'HB',16073940,N'16073940-Suite Ocean View Two Bedrooms (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715188,2),
+	 (100111, N'HB',16073941,N'16073941-Suite Sea View (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',3942879,2),
+	 (100111, N'HB',16073942,N'16073942-Double Economy (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16073944,N'16073944-Double Ocean View (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,2),
+	 (100111, N'HB',16073946,N'16073946-Room Deluxe Ocean View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,2),
+	 (100111, N'HB',16073948,N'16073948-Double Sea View (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,2),
+	 (100111, N'HB',16073950,N'16073950-Double Ocean View King Bed (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,2),
+	 (100111, N'HB',16073952,N'16073952-Double Ocean View (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,2),
+	 (100111, N'HB',16073953,N'16073953-Suite Ocean View (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',3942879,2),
+	 (100111, N'HB',16073956,N'16073956-Suite Partial Sea View (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',3942879,2),
+	 (100111, N'HB',16073957,N'16073957-Apartment Luxury Two Bedrooms (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16073959,N'16073959-Apartment Deluxe Two Bedroom (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16073962,N'16073962-Room Premium (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16073963,N'16073963-Suite Sea View Two Bedrooms (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715188,2),
+	 (100111, N'HB',16073966,N'16073966-Twin Standard (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16073967,N'16073967-Room Deluxe Bay View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715185,2),
+	 (100111, N'HB',16073972,N'16073972-Room Luxury (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16175838,N'16175838-Suite Standard (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175842,N'16175842-Suite Ocean View One Bedroom (4/2-2)1 Cama king size 150-183 ancho Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175843,N'16175843-Room With Views (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175844,N'16175844-Suite King Size Bed (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175845,N'16175845-Room Business (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175846,N'16175846-Double Lagoon View (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16175848,N'16175848-Room Deluxe Lagoon View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715181,2),
+	 (100111, N'HB',16175849,N'16175849-Single Standard (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175851,N'16175851-Family Room Deluxe Lagoon View (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16175852,N'16175852-Suite Standard (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175854,N'16175854-Double With Views (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175855,N'16175855-Twin Deluxe Two Double Beds (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175856,N'16175856-Room Business Deluxe (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175857,N'16175857-Tent Sea View (7/7-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175859,N'16175859-Double Deluxe Lake View (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715181,2),
+	 (100111, N'HB',16175860,N'16175860-Double Deluxe Ocean View (4/2-0)1 Cama king size 150-183 ancho Sujeto a disponibilidad',N'',4715184,2),
+	 (100111, N'HB',16175861,N'16175861-Double Lake View (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16175863,N'16175863-Suite Two Bedrooms (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16175864,N'16175864-Suite Luxury Sea View (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175865,N'16175865-Suite Superior (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175866,N'16175866-Room Deluxe Sea View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715184,2),
+	 (100111, N'HB',16175867,N'16175867-Double Or Twin Deluxe Lagoon View (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16175868,N'16175868-Room Lagoon View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715180,2),
+	 (100111, N'HB',16175869,N'16175869-Double Or Twin Lake View (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16175870,N'16175870-Room Bay View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715181,2),
+	 (100111, N'HB',16175871,N'16175871-Apartment Two Bedrooms (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16175873,N'16175873-Double Deluxe With Views (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16175874,N'16175874-Family Room Deluxe Bay View (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16175875,N'16175875-Twin Deluxe (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175876,N'16175876-Family Room Luxury Two Bedrooms (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16175877,N'16175877-Room Standard (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16175878,N'16175878-Double Standard (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16301471,N'16301471-Room Inner (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16404284,N'16404284-Single With Views (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715176,2),
+	 (100111, N'HB',16404285,N'16404285-Double Or Twin With Views (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',16404286,N'16404286-Family Room Deluxe Lake View (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',4715179,2),
+	 (100111, N'HB',16404287,N'16404287-Family Room Deluxe Sea View (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',3928879,2),
+	 (100111, N'HB',16969421,N'16969421-Single Lagoon View (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969422,N'16969422-Double Sea View King Bed (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969423,N'16969423-Quadruple Standard (6/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969424,N'16969424-Room Comfort (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969425,N'16969425-Room With Balcony (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969427,N'16969427-Room Sea View Two Bedrooms (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969428,N'16969428-Room Ocean View Two Bedrooms (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969429,N'16969429-Double Or Twin Lagoon View (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969430,N'16969430-Family Room Sea View Two Bedrooms (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969431,N'16969431-Double Or Twin Standard (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969432,N'16969432-Room Sea View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969433,N'16969433-Room Two Beds (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969434,N'16969434-Apartment Deluxe Sea View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969435,N'16969435-Family Room Sea View (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969436,N'16969436-Room Ocean View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969437,N'16969437-Double Or Twin Deluxe Ocean View (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969438,N'16969438-Double Ocean View Two Bedrooms (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969439,N'16969439-Suite Luxury (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969440,N'16969440-Room Two Bedrooms (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969441,N'16969441-Suite Deluxe (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969442,N'16969442-Family Room Deluxe (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969443,N'16969443-Double King Size Bed (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969444,N'16969444-Family Room Deluxe (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',16969445,N'16969445-Quadruple Deluxe (6/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216896,N'17216896-Family Room Deluxe With Views (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216898,N'17216898-Single Inner (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216899,N'17216899-Room Capacity 1 (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216900,N'17216900-Suite Capacity 1 (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216901,N'17216901-Family Room Luxury Sea View (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216902,N'17216902-Apartment Luxury Sea View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216903,N'17216903-Double Or Twin Inner (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216904,N'17216904-Room Luxury Sea View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216906,N'17216906-Suite Capacity 3 Two Bedrooms (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216912,N'17216912-Double Or Twin Deluxe With Views (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216916,N'17216916-Double Inner (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216920,N'17216920-Room Deluxe With Views (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216924,N'17216924-Single Deluxe With Views (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216927,N'17216927-Room Two Queen Beds With Views (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216934,N'17216934-Room Capacity 3 (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216946,N'17216946-Single Sea View (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216953,N'17216953-Single Sea View Two Bedrooms (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216963,N'17216963-Room Capacity 2 (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216974,N'17216974-Suite Capacity 4 Two Bedrooms (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216984,N'17216984-Room Deluxe Two Double Beds (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17216993,N'17216993-Double Or Twin Deluxe Sea View (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17217001,N'17217001-Double Or Twin Sea View Two Bedrooms (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17217019,N'17217019-Suite One Bedroom (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17217028,N'17217028-Double Or Twin Luxury (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17217036,N'17217036-Suite Capacity 2 Two Bedrooms (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17217045,N'17217045-Room Capacity 4 (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17217052,N'17217052-Single Deluxe (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17217057,N'17217057-Family Room Deluxe Ocean View (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17217062,N'17217062-Double Or Twin Sea View (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17217069,N'17217069-Room Deluxe Two Bedroom (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',17906360,N'17906360-Family Room Two Bedrooms With Views (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18007438,N'18007438-Room Superior (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18189793,N'18189793-Room Deluxe Lake View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18189800,N'18189800-Family Room King Bed Two Bedrooms (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18189807,N'18189807-Double Single Use Standard (2/1-1)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18421730,N'18421730-Double Or Twin Superior (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18421731,N'18421731-Single Superior (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18421733,N'18421733-Apartment Standard (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18421734,N'18421734-Family Room Lake View (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18421735,N'18421735-Family Room Ocean View (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18421736,N'18421736-Single Deluxe Two Bedroom (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18421737,N'18421737-Single Deluxe Ocean View (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18421738,N'18421738-Double Or Twin Deluxe Two Bedroom (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18421739,N'18421739-Single Luxury (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18441030,N'18441030-Double Deluxe (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824488,N'18824488-Double Deluxe Two Double Beds (3/3-2)2 Camas dobles de 131-150 de ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824494,N'18824494-Double Ocean View Two Double Beds (3/3-2)2 Camas dobles de 131-150 de ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824500,N'18824500-Double Deluxe Two Beds (3/3-2)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824506,N'18824506-Family Room Two Bedrooms (6/5-5)1 Cama king size 150-183 ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824510,N'18824510-Family Room Two Bedrooms (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824514,N'18824514-Family Room Deluxe Two Bedroom (6/5-5)1 Cama doble de 131-150 de ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824518,N'18824518-Family Room Ocean View Two Bedrooms (5/4-4)1 Cama king size 150-183 ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824522,N'18824522-Room Deluxe One Bed (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824526,N'18824526-Studio Standard (5/5-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824531,N'18824531-Suite Ocean View King Bed (2/2-0)1 Cama king size 150-183 ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824533,N'18824533-Villa Two Bedrooms (20/20-13)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',18824534,N'18824534-Villa Three Bedrooms (20/20-13)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247097,N'19247097-Doble Deluxe (4/4-3)1 Cama doble de 131-150 de ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247098,N'19247098-Doble Interior (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247099,N'19247099-Doble Vistas Al Lago (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247100,N'19247100-Doble Luxury (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247101,N'19247101-Doble Luxury (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247102,N'19247102-Doble Vistas Al Oceano (5/5-4)1 Cama king size 150-183 ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247103,N'19247103-Doble Vistas Al Oceano (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247104,N'19247104-Doble Standard (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247105,N'19247105-Doble Standard (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247106,N'19247106-Doble Vistas Al Mar (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247108,N'19247108-Doble 1 O 2 Camas Deluxe (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247110,N'19247110-Doble 1 O 2 Camas Standard (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247111,N'19247111-Doble 1 O 2 Camas Con Vistas (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247112,N'19247112-Doble Uso Individual Standard (2/1-1)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247113,N'19247113-Habitacion Familiar Deluxe (8/8-4)1 Cama king size 150-183 ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247114,N'19247114-Habitacion Familiar Deluxe (6/4-2)2 Camas dobles de 131-150 de ancho Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247115,N'19247115-Habitacion Familiar Standard (8/8-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247117,N'19247117-Habitación Deluxe (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247118,N'19247118-Habitación Deluxe (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247120,N'19247120-Habitación Standard (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247121,N'19247121-Habitación Standard (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247122,N'19247122-Individual Standard (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247123,N'19247123-Individual Standard (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247124,N'19247124-Individual Con Vistas (1/1-0)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247125,N'19247125-Suite Un Dormitorio (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247127,N'19247127-Suite Dos Dormitorios (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247151,N'19247151-Double Two Beds (4/4-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247152,N'19247152-Double Or Twin Deluxe Lake View (6/6-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247153,N'19247153-Junior Suite Deluxe (5/5-3)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247154,N'19247154-Room Lake View (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247155,N'19247155-Suite King Bed One Bedroom (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',19247156,N'19247156-Suite With Views (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',20300500,N'20300500-Habitación Luxury Dos Dormitorios (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',20345070,N'20345070-Habitación Vistas Al Oceano Dos Camas Dobles (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',20345075,N'20345075-Suite Una Cama (8/8-5)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',20345080,N'20345080-Triple Deluxe (5/3-4)Sujetas a disponibilidad Sujeto a disponibilidad',N'',0,2),
+	 (100111, N'HB',4198336,N'4198336-Double Deluxe King Bed (3/2-2)1 Cama king size 150-183 ancho Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'HB',6865843,N'6865843-Room Deluxe (10/10-6)Sujetas a disponibilidad Sujeto a disponibilidad',N'',1004379,2),
+	 (100111, N'Roibos',25781168,N'25781168-Run Of House (4/2-0)1 Cama,2 Camas (sujeto a disponibilidad) De acuerdo a la hab reservada',N'',0,4),
+	 (100111, N'HS',25781169,N'25781168-Run Of House (4/2-0)1 Cama,2 Camas (sujeto a disponibilidad) De acuerdo a la hab reservada',N'',0,7);
+GO

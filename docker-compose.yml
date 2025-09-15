@@ -18,33 +18,14 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - sqlserver-data:/var/opt/mssql
-      - ./docker/sql-scripts:/scripts
+      - ./sql-server/sql-scripts:/scripts
     networks:
       - net-hotel
-
-  db-init:
-    image: mcr.microsoft.com/mssql-tools
-    depends_on:
-      - db
-    environment:
-      SA_PASSWORD: "Admin!Sql123"
-      ACCEPT_EULA: "Y"
-    volumes:
-      - ./docker/sql-scripts:/scripts
-    entrypoint: /bin/bash
-    command: >
-      -c "
-      echo 'Esperando a SQL Server...';
-      sleep 20;
-      for f in /scripts/*.sql; do
-        echo 'Ejecutando $f';
-        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P $SA_PASSWORD -i $f;
-      done
-      "
+      
   backend:
     build:
       context: ./backend
-      target: dev   # 👈 para desarrollo
+      target: dev   # para desarrollo
     container_name: backend
     restart: always
     volumes:
@@ -74,6 +55,6 @@ services:
     depends_on:
       - backend
     ports:
-      - "80:80"   # 👈 este es el único que expones hacia el host
+      - "80:80"   # este es el único que expones hacia el host
     networks:
       - net-hotel
