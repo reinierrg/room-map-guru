@@ -47,9 +47,9 @@ class RoomService {
     // Guardar habitaciones por hotels
     async saveRooms(relationRooms: Map<number, number>): Promise<void> {
         try {
-            const listRooms = Array.from(relationRooms, ([room1, room2]) => ({
-                room1: Math.floor(Number(room1)),
-                room2: Math.floor(Number(room2)),
+            const listRooms = Array.from(relationRooms, ([roomRelation, roomPrice]) => ({
+                room1: Math.floor(Number(roomPrice)),
+                room2: Math.floor(Number(roomRelation)),
             }))
 
             await apiClient.post<ApiResponse<void>>(

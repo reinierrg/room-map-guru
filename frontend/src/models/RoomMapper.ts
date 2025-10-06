@@ -68,6 +68,55 @@ export default class RoomMapper {
         return rooms.map((room) => this.processRoom(room))
     }
 
+    static mapRelationByRooms(rooms: IRoom[]) {
+        const relations: { [key: number]: number[] } = {}
+        rooms.forEach((room: any) => {
+            if (!room.id) return
+
+            const mappingTypes = ['mapExpedia', 'mapHb', 'mapHs'] as const
+
+            mappingTypes.forEach((mappingType: string) => {
+                const mappings = room[mappingType]
+
+                if (Array.isArray(mappings) && mappings.length > 0) {
+                    mappings.forEach((mappingId) => {
+                        if (!relations[room.id!]) {
+                            relations[room.id!] = []
+                        }
+
+                        if (!relations[room.id!].includes(mappingId)) {
+                            relations[room.id!].push(mappingId)
+                        }
+                    })
+                }
+            })
+        })
+        return relations
+    }
+
+    static getEntrieRelation (relations: object, roomsById: Map<number, IRoom>) {
+        const relationMap: Map<number, number> = new Map()
+        
+        // Procesar cada relación para agrupar por tipo de room destino
+        Object.entries(relations).forEach(
+            ([sourceRoomIdStr, targetRoomIds]) => {
+                const sourceRoomId = parseInt(sourceRoomIdStr)
+                const sourceRoom = roomsById.get(sourceRoomId)
+
+                if (!sourceRoom) return
+
+                targetRoomIds.forEach((targetRoomId: any) => {
+                    const targetRoom = roomsById.get(targetRoomId)
+                    if (!targetRoom) return
+
+                    relationMap.set(targetRoomId, sourceRoomId)
+                })
+            }
+        )
+
+        return relationMap;
+    }
+
     /**
      * Función para mapear las relaciones a los formatos específicos de cada tipo de room
      */
@@ -82,43 +131,24 @@ export default class RoomMapper {
                 roomsById.set(room.id, room)
             }
         })
+        // mapeo de las relaciones modificadas para el hotel seleccionado
+        const relationMap = this.getEntrieRelation(relations, roomsById)
 
-        const relationMap: Map<number, number> = new Map()
+        // Mapeo de las relaciones originales para el hotel seleccionado
+        const relationsOrigin = this.mapRelationByRooms(allRooms)
+        const relationMapOrigin = this.getEntrieRelation(relationsOrigin, roomsById)
 
-        // Procesar cada relación para agrupar por tipo de room destino
-        Object.entries(relations).forEach(
-            ([sourceRoomIdStr, targetRoomIds]) => {
-                const sourceRoomId = parseInt(sourceRoomIdStr)
-                const sourceRoom = roomsById.get(sourceRoomId)
-
-                if (!sourceRoom) return
-
-                targetRoomIds.forEach((targetRoomId) => {
-                    const targetRoom = roomsById.get(targetRoomId)
-                    if (!targetRoom) return
-
-                    relationMap.set(targetRoomId, sourceRoomId)
-                })
+        let deleteRelation: number[] = [];
+        relationMapOrigin.forEach((_, key) => {
+            if (!relationMap.has(key)) {
+                deleteRelation.push(key)
             }
-        )
+        })
 
+        deleteRelation.forEach((value: number) => {
+            relationMap.set(value, 0);
+        })
 
         return relationMap;
-
-        // Crear el nuevo array de rooms con los mapeos actualizados
-        /*
-    return allRooms.map(room => {
-        if (!room.id) return room;
-
-        const map = relationMap.get(room.id);
-        return {
-            id: room.id,
-            map,
-            name: room.name,
-            price: room.price,
-            type: room.type,
-            uri: room.uri
-        };
-    });*/
     }
 }

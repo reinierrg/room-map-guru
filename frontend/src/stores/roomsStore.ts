@@ -4,6 +4,7 @@ import { roomService } from '../services/room/room.service'
 import type { IRoom } from '../services/room/room.types'
 import { useRelationsStore } from './relationsStore'
 import { useNotificationStore } from './notificationStore'
+import RoomMapper from '../models/RoomMapper'
 
 interface RoomsState {
     rooms: IRoom[]
@@ -42,33 +43,7 @@ export const useRoomsStore = create<RoomsState>()(
             },
 
             processRoomMappings: (rooms: IRoom[]) => {
-                const relations: { [key: number]: number[] } = {}
-
-                rooms.forEach((room: any) => {
-                    if (!room.id) return
-
-                    const mappingTypes = [
-                        'mapExpedia',
-                        'mapHb',
-                        'mapHs',
-                    ] as const
-
-                    mappingTypes.forEach((mappingType: string) => {
-                        const mappings = room[mappingType]
-
-                        if (Array.isArray(mappings) && mappings.length > 0) {
-                            mappings.forEach((mappingId) => {
-                                if (!relations[room.id!]) {
-                                    relations[room.id!] = []
-                                }
-
-                                if (!relations[room.id!].includes(mappingId)) {
-                                    relations[room.id!].push(mappingId)
-                                }
-                            })
-                        }
-                    })
-                })
+                const relations = RoomMapper.mapRelationByRooms(rooms)
                 useRelationsStore.getState().setRelations(relations, false)
             },
             saveRooms: async (relationRooms: Map<number, number>) => {
