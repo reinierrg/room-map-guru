@@ -3,12 +3,13 @@ import { House } from 'lucide-react'
 import { RoomCard } from './RoomCard'
 import Loading from './Loading'
 import { useRooms } from '../hooks/useRooms'
+import { isInterno } from '../utils/utils'
 
 export const RoomsDashboard = () => {
     
     const {rooms, loading} = useRooms()
 
-    const getManagersOnly = useMemo(() => rooms.filter((room) => room.type === 'Interno'), [rooms])
+    const getManagersOnly = useMemo(() => rooms.filter((room) => isInterno(room.type)), [rooms])
 
     if (loading) return <Loading  message='Espere mientras se carga el Dashboard'/>
 

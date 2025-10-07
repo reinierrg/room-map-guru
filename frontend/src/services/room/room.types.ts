@@ -1,5 +1,5 @@
 // Tipos para habitaciones
-export type RoomType = 'Interno' | 'Expedia' | 'HB' | 'HS';
+export type RoomType = 'Interno' | 'SiteMinder' | 'Expedia' | 'HB' | 'HS';
 
 export interface IRoom {
     id: number

@@ -10,6 +10,7 @@ import { RoomsByType } from '../components/RoomsByType'
 import { Search } from 'lucide-react'
 import Loading from '../components/Loading'
 import { Notification } from '../components/Notification'
+import { isInterno } from '../utils/utils'
 
 export default function HomePage() {
     const { hotels, loading: hotelsLoading, searchHotels } = useHotels()
@@ -81,7 +82,7 @@ export default function HomePage() {
     }
 
     // Filtrar rooms por tipo
-    const internalRooms = rooms.filter((room) => room.type === 'Interno')
+    const internalRooms = rooms.filter((room) => isInterno(room.type))
     const expediaRooms = rooms.filter((room) => room.type === 'Expedia')
     const hbRooms = rooms.filter((room) => room.type === 'HB')
     const hsRooms = rooms.filter((room) => room.type === 'HS')

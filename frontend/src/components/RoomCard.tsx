@@ -13,6 +13,7 @@ import { SubordinateSelector } from './SubordinateSelector'
 import { SubordinateItem } from './SubordinateItem'
 import type { IRoom } from '../services/room/room.types'
 import { useAgents } from '../hooks/useAgents'
+import { isInterno } from '../utils/utils'
 
 export const RoomCard = ({ room }: { room: IRoom }) => {
     const { rooms, setRooms } = useRooms()
@@ -51,7 +52,7 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
             !roomsRelations.includes(r.id) &&
          //   !isRoomDescendant(r.id, supervisorId) &&
             r.name.toLowerCase().includes(subordinateSearchTerm.toLowerCase()) &&
-            (supervisor?.type !== 'Interno' || r.type !== 'Interno')
+            (!isInterno(supervisor?.type || '') || !isInterno(r.type))
         )
     }
 
@@ -79,7 +80,7 @@ export const RoomCard = ({ room }: { room: IRoom }) => {
         setRelations(newRelations)
     }
 
-    const isManager = room.type === 'Interno'
+    const isManager = isInterno(room.type)
     const subordinates = relations[room.id] || []
     const isExpanded = expandedPeople[room.id]
     const showSelector = showSubordinateSelector[room.id]

@@ -34,6 +34,7 @@ export const mapApiRoomToRoom = (apiRoom: IApiRoom): Partial<IRoom> => {
 const mapRoomType = (type: string): RoomType => {
     switch (type) {
         case 'Interno': return 'Interno';
+        case 'SiteMinder': return 'SiteMinder';
         case 'Expedia': return 'Expedia';
         case 'HB': return 'HB';
         case 'HS': return 'HS';
